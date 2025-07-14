@@ -42,20 +42,7 @@
         <button type="button" @click="addAction">+ action</button>
         <ul>
           <li v-for="(act, i) in localCommand.actions" :key="i">
-            <select v-model="act.type">
-              <option value="send_message">send_message</option>
-              <option value="button">button</option>
-              <option value="edit_component">edit_component</option>
-              <option value="delete_message">delete_message</option>
-              <option value="send_form">send_form</option>
-              <option value="add_role">add_role</option>
-              <option value="send_to_channel">send_to_channel</option>
-              <option value="send_page">send_page</option>
-              <option value="resolve_placeholders">resolve_placeholders</option>
-              <option value="embed">embed</option>
-            </select>
-            <input v-model="act.message" placeholder="message" />
-            <button type="button" @click="removeAction(i)">🗑️</button>
+            <ActionEditor :action="act" @delete="removeAction(i)" />
           </li>
         </ul>
       </div>
@@ -83,6 +70,7 @@
 
 <script setup>
 import { reactive, watch } from 'vue';
+import ActionEditor from './ActionEditor.vue';
 const props = defineProps({
   command: Object,
   isNew: Boolean
