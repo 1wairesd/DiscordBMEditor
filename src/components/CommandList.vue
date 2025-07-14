@@ -7,17 +7,22 @@
     </div>
     <ul>
       <li v-for="(cmd, idx) in filteredCommands" :key="idx" :class="{selected: idx === selectedIndex}" @click="$emit('select', idx)">
-        <b>{{ cmd.name }}</b> <span class="desc">— {{ cmd.description }}</span>
-        <button class="edit" @click.stop="$emit('edit', idx)">✏️</button>
-        <button class="delete" @click.stop="$emit('delete', idx)">🗑️</button>
-        <button class="clone" @click.stop="$emit('clone', idx)">📋</button>
+        <div class="cmd-main">
+          <div class="cmd-name">{{ cmd.name }}</div>
+          <div class="cmd-desc">{{ cmd.description }}</div>
+        </div>
+        <div class="cmd-icons">
+          <button class="edit" @click.stop="$emit('edit', idx)">✏️</button>
+          <button class="delete" @click.stop="$emit('delete', idx)">🗑️</button>
+          <button class="clone" @click.stop="$emit('clone', idx)">📋</button>
+        </div>
       </li>
     </ul>
   </div>
 </template>
 
 <script setup>
-import { computed, ref, watch } from 'vue';
+import { computed, ref } from 'vue';
 const props = defineProps({
   commands: Array,
   selectedIndex: Number
@@ -62,18 +67,45 @@ ul {
 li {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 6px 0;
+  gap: 12px;
+  padding: 14px 0 10px 0;
   border-bottom: 1px solid #3335;
   cursor: pointer;
+  min-height: 48px;
+  transition: background 0.15s;
 }
 li.selected {
   background: #2c3136;
 }
-li .desc {
-  color: #aaa;
-  font-size: 0.95em;
+.cmd-main {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  min-width: 0;
+}
+.cmd-name {
+  font-weight: 700;
+  font-size: 1.08em;
+  color: #fff;
+  margin-bottom: 2px;
+  margin-left: 2px;
+}
+.cmd-desc {
+  color: #b9bbbe;
+  font-size: 0.97em;
+  margin-left: 6px;
+  margin-top: 0;
+  max-width: 180px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cmd-icons {
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 button.edit, button.delete, button.clone {
   background: none;
