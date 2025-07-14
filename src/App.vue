@@ -42,8 +42,12 @@ onMounted(async () => {
   loading.value = true;
   try {
     const resp = await axios.get(`https://bytebin.lucko.me/${code}`);
-    rawData.value = resp.data;
-    commands.value = Array.isArray(resp.data.commands) ? resp.data.commands : [];
+    let data = resp.data;
+    if (typeof data === 'string') {
+      data = JSON.parse(data);
+    }
+    rawData.value = data;
+    commands.value = Array.isArray(data.commands) ? data.commands : [];
   } catch (e) {
     error.value = e.message || 'Ошибка загрузки данных';
   } finally {
