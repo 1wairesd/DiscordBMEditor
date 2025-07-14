@@ -22,8 +22,15 @@
         <button type="button" @click="addOption">+ option</button>
         <ul>
           <li v-for="(opt, i) in localCommand.options" :key="i">
+            <select v-model="opt.type">
+              <option value="STRING">STRING</option>
+              <option value="USER">USER</option>
+              <option value="CHANNEL">CHANNEL</option>
+              <option value="ROLE">ROLE</option>
+              <option value="BOOLEAN">BOOLEAN</option>
+              <option value="INTEGER">INTEGER</option>
+            </select>
             <input v-model="opt.name" placeholder="name" />
-            <input v-model="opt.type" placeholder="type" />
             <input v-model="opt.description" placeholder="description" />
             <input type="checkbox" v-model="opt.required" /> required
             <button type="button" @click="removeOption(i)">🗑️</button>
@@ -35,7 +42,18 @@
         <button type="button" @click="addAction">+ action</button>
         <ul>
           <li v-for="(act, i) in localCommand.actions" :key="i">
-            <input v-model="act.type" placeholder="type" />
+            <select v-model="act.type">
+              <option value="send_message">send_message</option>
+              <option value="button">button</option>
+              <option value="edit_component">edit_component</option>
+              <option value="delete_message">delete_message</option>
+              <option value="send_form">send_form</option>
+              <option value="add_role">add_role</option>
+              <option value="send_to_channel">send_to_channel</option>
+              <option value="send_page">send_page</option>
+              <option value="resolve_placeholders">resolve_placeholders</option>
+              <option value="embed">embed</option>
+            </select>
             <input v-model="act.message" placeholder="message" />
             <button type="button" @click="removeAction(i)">🗑️</button>
           </li>
@@ -46,8 +64,11 @@
         <button type="button" @click="addCondition">+ condition</button>
         <ul>
           <li v-for="(cond, i) in localCommand.conditions" :key="i">
-            <input v-model="cond.type" placeholder="type" />
-            <input v-model="cond.role_id" placeholder="role_id" />
+            <select v-model="cond.type">
+              <option value="permission">permission</option>
+              <option value="chance">chance</option>
+            </select>
+            <input v-model="cond.role_id" placeholder="role_id / percent" />
             <button type="button" @click="removeCondition(i)">🗑️</button>
           </li>
         </ul>
@@ -61,7 +82,7 @@
 </template>
 
 <script setup>
-import { reactive, toRefs, watch, computed } from 'vue';
+import { reactive, watch } from 'vue';
 const props = defineProps({
   command: Object,
   isNew: Boolean
@@ -74,11 +95,20 @@ const localCommand = reactive(JSON.parse(JSON.stringify(props.command || {
 watch(() => props.command, (val) => {
   Object.assign(localCommand, JSON.parse(JSON.stringify(val)));
 });
-function addOption() { localCommand.options.push({ name: '', type: '', description: '', required: false }); }
+function addOption() {
+  if (!localCommand.options) localCommand.options = [];
+  localCommand.options.push({ name: '', type: 'STRING', description: '', required: false });
+}
 function removeOption(i) { localCommand.options.splice(i, 1); }
-function addAction() { localCommand.actions.push({ type: '', message: '' }); }
+function addAction() {
+  if (!localCommand.actions) localCommand.actions = [];
+  localCommand.actions.push({ type: 'send_message', message: '' });
+}
 function removeAction(i) { localCommand.actions.splice(i, 1); }
-function addCondition() { localCommand.conditions.push({ type: '', role_id: '' }); }
+function addCondition() {
+  if (!localCommand.conditions) localCommand.conditions = [];
+  localCommand.conditions.push({ type: 'permission', role_id: '' });
+}
 function removeCondition(i) { localCommand.conditions.splice(i, 1); }
 </script>
 
