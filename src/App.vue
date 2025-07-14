@@ -1,16 +1,7 @@
 <template>
-  <main class="editor">
-    <h1>DiscordBM Editor</h1>
-    <div v-if="!code">
-      <p>Откройте редактор по ссылке вида <code>#код</code> (например, https://your-discordbm-editor.onrender.com/#abcdef123456)</p>
-    </div>
-    <div v-else-if="loading">
-      <p>Загрузка данных...</p>
-    </div>
-    <div v-else-if="error">
-      <p style="color: red">Ошибка: {{ error }}</p>
-    </div>
-    <div v-else>
+  <div class="layout">
+    <aside class="sidebar">
+      <h2>Команды</h2>
       <CommandList
         :commands="commands"
         :selectedIndex="selectedIndex"
@@ -20,20 +11,47 @@
         @add="addCommand"
         @clone="cloneCommand"
       />
-      <CommandEditor
-        v-if="editingIndex !== null"
-        :command="commands[editingIndex]"
-        :isNew="isNewCommand"
-        @save="saveCommand"
-        @cancel="cancelEdit"
-      />
-      <button @click="saveEdits">Сохранить все изменения</button>
-      <div v-if="saveResult">
-        <p>Скопируйте команду для применения изменений:</p>
-        <code>/discordbmv applyedits {{ saveResult }}</code>
+    </aside>
+    <main class="main">
+      <header class="header">
+        <h1>DiscordBM Editor</h1>
+        <button v-if="commands.length" @click="saveEdits">💾 Сохранить все изменения</button>
+      </header>
+      <div v-if="!code">
+        <p>Откройте редактор по ссылке вида <code>#код</code> (например, https://your-discordbm-editor.onrender.com/#abcdef123456)</p>
       </div>
-    </div>
-  </main>
+      <div v-else-if="loading">
+        <p>Загрузка данных...</p>
+      </div>
+      <div v-else-if="error">
+        <p style="color: red">Ошибка: {{ error }}</p>
+      </div>
+      <div v-else>
+        <div v-if="editingIndex !== null">
+          <CommandEditor
+            :command="commands[editingIndex]"
+            :isNew="isNewCommand"
+            @save="saveCommand"
+            @cancel="cancelEdit"
+          />
+        </div>
+        <div v-else-if="selectedIndex !== null">
+          <div class="empty-editor">
+            <p>Выберите команду для редактирования или нажмите ✏️</p>
+          </div>
+        </div>
+        <div v-else>
+          <div class="empty-editor">
+            <p>Выберите или создайте команду</p>
+          </div>
+        </div>
+        <div v-if="saveResult" class="save-result">
+          <p>Скопируйте команду для применения изменений:</p>
+          <code>/discordbmv applyedits {{ saveResult }}</code>
+        </div>
+      </div>
+    </main>
+  </div>
 </template>
 
 <script setup>
@@ -132,15 +150,47 @@ body {
   color: #fff;
   margin: 0;
 }
-.editor {
-  max-width: 900px;
-  margin: 40px auto;
-  background: #23272b;
-  border-radius: 12px;
-  padding: 32px;
-  box-shadow: 0 2px 16px #0008;
+.layout {
+  display: flex;
+  min-height: 100vh;
 }
-button {
+.sidebar {
+  width: 320px;
+  background: #202225;
+  border-right: 1.5px solid #23272b;
+  padding: 24px 12px 12px 12px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.sidebar h2 {
+  margin: 0 0 12px 8px;
+  font-size: 1.2em;
+  color: #b9bbbe;
+  letter-spacing: 1px;
+}
+.main {
+  flex: 1;
+  padding: 32px 40px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+.header h1 {
+  font-size: 2em;
+  font-weight: 700;
+  margin: 0;
+  color: #fff;
+}
+.header button {
   background: #5865f2;
   color: #fff;
   border: none;
@@ -148,10 +198,29 @@ button {
   padding: 10px 18px;
   font-size: 1rem;
   cursor: pointer;
-  margin-top: 16px;
+  margin-left: 16px;
+  transition: background 0.2s;
 }
-button:hover {
+.header button:hover {
   background: #4752c4;
+}
+.empty-editor {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #aaa;
+  font-size: 1.2em;
+  min-height: 200px;
+}
+.save-result {
+  margin-top: 32px;
+  background: #23272b;
+  border-radius: 8px;
+  padding: 18px 24px;
+  color: #fff;
+  font-size: 1.1em;
+  box-shadow: 0 2px 8px #0004;
 }
 code {
   background: #111;
