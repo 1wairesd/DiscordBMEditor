@@ -10,7 +10,6 @@
       <option value="send_to_channel">send_to_channel</option>
       <option value="send_page">send_page</option>
       <option value="resolve_placeholders">resolve_placeholders</option>
-      <option value="embed">embed</option>
     </select>
     <!-- send_message -->
     <template v-if="action.type === 'send_message'">
