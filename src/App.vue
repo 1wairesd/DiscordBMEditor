@@ -11,13 +11,23 @@
       <p style="color: red">Ошибка: {{ error }}</p>
     </div>
     <div v-else>
-      <h2>Команды ({{ commands.length }})</h2>
-      <ul>
-        <li v-for="(cmd, idx) in commands" :key="idx">
-          <b>{{ cmd.name }}</b> — {{ cmd.description }}
-        </li>
-      </ul>
-      <button @click="saveEdits">Сохранить изменения</button>
+      <CommandList
+        :commands="commands"
+        :selectedIndex="selectedIndex"
+        @select="selectCommand"
+        @edit="editCommand"
+        @delete="deleteCommand"
+        @add="addCommand"
+        @clone="cloneCommand"
+      />
+      <CommandEditor
+        v-if="editingIndex !== null"
+        :command="commands[editingIndex]"
+        :isNew="isNewCommand"
+        @save="saveCommand"
+        @cancel="cancelEdit"
+      />
+      <button @click="saveEdits">Сохранить все изменения</button>
       <div v-if="saveResult">
         <p>Скопируйте команду для применения изменений:</p>
         <code>/discordbmv applyedits {{ saveResult }}</code>
@@ -29,6 +39,8 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
+import CommandList from './components/CommandList.vue';
+import CommandEditor from './components/CommandEditor.vue';
 
 const code = window.location.hash.replace('#', '');
 const loading = ref(false);
@@ -36,6 +48,9 @@ const error = ref('');
 const commands = ref([]);
 const rawData = ref({});
 const saveResult = ref('');
+const selectedIndex = ref(null);
+const editingIndex = ref(null);
+const isNewCommand = ref(false);
 
 onMounted(async () => {
   if (!code) return;
@@ -55,10 +70,49 @@ onMounted(async () => {
   }
 });
 
+function selectCommand(idx) {
+  selectedIndex.value = idx;
+  editingIndex.value = null;
+}
+function editCommand(idx) {
+  editingIndex.value = idx;
+  isNewCommand.value = false;
+}
+function addCommand() {
+  commands.value.push({
+    name: '', description: '', context: 'server', ephemeral: false,
+    options: [], actions: [], conditions: []
+  });
+  editingIndex.value = commands.value.length - 1;
+  isNewCommand.value = true;
+}
+function cloneCommand(idx) {
+  const clone = JSON.parse(JSON.stringify(commands.value[idx]));
+  clone.name = clone.name + '_copy';
+  commands.value.splice(idx + 1, 0, clone);
+}
+function deleteCommand(idx) {
+  if (confirm('Удалить команду?')) {
+    commands.value.splice(idx, 1);
+    if (editingIndex.value === idx) editingIndex.value = null;
+  }
+}
+function saveCommand(cmd) {
+  commands.value[editingIndex.value] = JSON.parse(JSON.stringify(cmd));
+  editingIndex.value = null;
+  isNewCommand.value = false;
+}
+function cancelEdit() {
+  if (isNewCommand.value) {
+    commands.value.pop();
+  }
+  editingIndex.value = null;
+  isNewCommand.value = false;
+}
 async function saveEdits() {
-  // Здесь можно добавить логику редактирования rawData.value перед отправкой
   loading.value = true;
   try {
+    rawData.value.commands = commands.value;
     const resp = await axios.post('https://bytebin.lucko.me/post', rawData.value, {
       headers: { 'Content-Type': 'application/json' }
     });
@@ -79,7 +133,7 @@ body {
   margin: 0;
 }
 .editor {
-  max-width: 700px;
+  max-width: 900px;
   margin: 40px auto;
   background: #23272b;
   border-radius: 12px;
