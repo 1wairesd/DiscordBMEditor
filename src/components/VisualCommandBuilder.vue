@@ -692,6 +692,15 @@ const onDrop = (event) => {
     y: event.clientY - rect.top
   }
   
+  // Гарантируем, что rootNode всегда есть
+  if (!elements.value.find(el => el.id === ROOT_NODE_ID)) {
+    elements.value.unshift({ ...rootNode });
+    // Если других custom-блоков нет, выделяем root
+    const customNodes = elements.value.filter(el => el.type === 'custom');
+    if (customNodes.length === 1 && customNodes[0].id === ROOT_NODE_ID) {
+      selectedNodeIds.value = [ROOT_NODE_ID];
+    }
+  }
   const newNode = {
     id: `node-${nodeIdCounter++}`,
     type: 'custom',
@@ -704,11 +713,8 @@ const onDrop = (event) => {
     }
   }
   
-  // Гарантируем, что rootNode всегда есть
-  if (!elements.value.find(el => el.id === ROOT_NODE_ID)) {
-    elements.value.unshift(rootNode)
-  }
   elements.value.push(newNode)
+  selectedNodeIds.value = [newNode.id];
   saveToHistory()
 }
 
@@ -818,12 +824,23 @@ const updateNodeData = (nodeId, newData) => {
 // Запретить удаление rootNode
 const deleteNode = () => {
   if (selectedNode.value && selectedNode.value.id !== ROOT_NODE_ID) {
+    const deletedId = selectedNode.value.id;
     elements.value = elements.value.filter(el => 
-      el.id !== selectedNode.value.id && 
-      (el.source !== selectedNode.value.id && el.target !== selectedNode.value.id)
-    )
-    selectedNodeIds.value = [ROOT_NODE_ID]
-    saveToHistory()
+      el.id !== deletedId && 
+      (el.source !== deletedId && el.target !== deletedId)
+    );
+    // Если остался только root, выделяем root, иначе выделяем первый оставшийся блок
+    const customNodes = elements.value.filter(el => el.type === 'custom');
+    if (customNodes.length === 1 && customNodes[0].id === ROOT_NODE_ID) {
+      selectedNodeIds.value = [ROOT_NODE_ID];
+    } else if (customNodes.length > 0) {
+      selectedNodeIds.value = [customNodes[0].id];
+    } else {
+      // Если вообще нет custom-блоков (маловероятно), создаём root
+      elements.value = [rootNode];
+      selectedNodeIds.value = [ROOT_NODE_ID];
+    }
+    saveToHistory();
   }
 }
 
@@ -1146,7 +1163,9 @@ saveToHistory()
 // Удаление по клавише Delete/Backspace
 function handleKeydown(e) {
   if ((e.key === 'Delete' || e.key === 'Backspace') && selectedNode.value) {
-    deleteNode()
+    // Запретить удаление rootNode
+    if (selectedNode.value.id === ROOT_NODE_ID) return;
+    deleteNode();
   }
 }
 onMounted(() => {
