@@ -15,10 +15,19 @@
     <main class="main">
       <header class="header">
         <h1>{{ $t('editor.title') }}</h1>
-        <select v-model="lang" @change="changeLang" class="lang-select">
-          <option value="en">EN</option>
-          <option value="ru">RU</option>
-        </select>
+        <div class="header-controls">
+          <button class="lang-btn">
+            <span class="lang-label">🌐</span>
+            <select v-model="lang" @change="changeLang" class="lang-select">
+              <option value="en">EN</option>
+              <option value="ru">RU</option>
+            </select>
+          </button>
+          <button class="doc-btn" @click="openDoc" title="{{$t('doc.label')}}">
+            <img src="/ws-logo.png" alt="doc" class="doc-icon" />
+            <span class="doc-label">{{ $t('doc.label') }}</span>
+          </button>
+        </div>
         <button v-if="commands.length" @click="saveEdits">💾 {{ $t('editor.saveAll') }}</button>
       </header>
       <div v-if="!code">
@@ -68,6 +77,9 @@ const lang = ref(locale.value);
 function changeLang() {
   locale.value = lang.value;
   localStorage.setItem('language', lang.value);
+}
+function openDoc() {
+  window.open('https://1wairesd.github.io/1wairesdIndustriesWiki/docs/intro', '_blank');
 }
 
 const code = window.location.hash.replace('#', '');
@@ -241,13 +253,73 @@ code {
   padding: 2px 6px;
   border-radius: 4px;
 }
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-right: 18px;
+}
+.lang-btn {
+  display: flex;
+  align-items: center;
+  background: linear-gradient(145deg, #23272b 60%, #2e3338 100%);
+  border: none;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px #0003, 0 1.5px 0 #444 inset;
+  padding: 0 16px;
+  height: 44px;
+  font-size: 1.1rem;
+  color: #fff;
+  cursor: pointer;
+  transition: box-shadow 0.2s, background 0.2s;
+  position: relative;
+}
+.lang-btn:hover {
+  box-shadow: 0 4px 16px #0005, 0 2px 0 #444 inset;
+  background: linear-gradient(145deg, #2e3338 60%, #23272b 100%);
+}
+.lang-label {
+  font-size: 1.3em;
+  margin-right: 8px;
+}
 .lang-select {
-  background: #23272b;
+  background: transparent;
   color: #fff;
   border: none;
-  border-radius: 6px;
-  padding: 8px 12px;
-  font-size: 1rem;
-  margin-right: 16px;
+  font-size: 1.1rem;
+  outline: none;
+  padding: 4px 8px;
+  cursor: pointer;
+  appearance: none;
+}
+.doc-btn {
+  display: flex;
+  align-items: center;
+  background: linear-gradient(145deg, #23272b 60%, #2e3338 100%);
+  border: none;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px #0003, 0 1.5px 0 #444 inset;
+  padding: 0 18px 0 10px;
+  height: 44px;
+  font-size: 1.1rem;
+  color: #fff;
+  cursor: pointer;
+  transition: box-shadow 0.2s, background 0.2s;
+  gap: 10px;
+}
+.doc-btn:hover {
+  box-shadow: 0 4px 16px #0005, 0 2px 0 #444 inset;
+  background: linear-gradient(145deg, #2e3338 60%, #23272b 100%);
+}
+.doc-icon {
+  width: 28px;
+  height: 28px;
+  margin-right: 4px;
+  filter: drop-shadow(0 1px 2px #0008);
+}
+.doc-label {
+  font-weight: 600;
+  font-size: 1.08em;
+  letter-spacing: 0.5px;
 }
 </style> 

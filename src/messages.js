@@ -17,6 +17,9 @@ export default {
     modal: {
       close: 'Close',
     },
+    doc: {
+      label: 'Documentation',
+    },
   },
   ru: {
     editor: {
@@ -35,6 +38,9 @@ export default {
     },
     modal: {
       close: 'Закрыть',
+    },
+    doc: {
+      label: 'Документация',
     },
   },
 }; 
