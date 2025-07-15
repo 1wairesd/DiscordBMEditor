@@ -130,8 +130,8 @@ const getConditionTypeLabel = () => {
   border: 2px solid #525252;
   border-radius: 12px;
   padding: 0;
-  min-width: 200px;
-  max-width: 280px;
+  min-width: 280px;
+  max-width: 400px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   transition: all 0.2s ease;
   position: relative;
@@ -144,11 +144,12 @@ const getConditionTypeLabel = () => {
 
 .node-header {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 0.75rem;
   padding: 0.75rem 1rem;
   border-radius: 10px 10px 0 0;
   border-bottom: 1px solid #525252;
+  min-height: 48px;
 }
 
 .node-header.type-option {
@@ -174,9 +175,9 @@ const getConditionTypeLabel = () => {
   font-weight: 600;
   color: #ffffff;
   flex: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  word-wrap: break-word;
+  white-space: normal;
+  line-height: 1.3;
 }
 
 .node-content {
@@ -188,6 +189,8 @@ const getConditionTypeLabel = () => {
   color: #9ca3af;
   margin-bottom: 0.5rem;
   line-height: 1.4;
+  word-wrap: break-word;
+  white-space: normal;
 }
 
 .node-details {
@@ -198,9 +201,11 @@ const getConditionTypeLabel = () => {
 
 .detail-item {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 0.5rem;
   font-size: 0.75rem;
+  word-wrap: break-word;
+  white-space: normal;
 }
 
 .detail-label {
@@ -211,6 +216,9 @@ const getConditionTypeLabel = () => {
 .detail-value {
   color: #e5e7eb;
   font-weight: 600;
+  word-wrap: break-word;
+  white-space: normal;
+  flex: 1;
 }
 
 .node-handles {
@@ -266,8 +274,8 @@ const getConditionTypeLabel = () => {
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .custom-node {
-    min-width: 160px;
-    max-width: 240px;
+    min-width: 240px;
+    max-width: 320px;
   }
   
   .node-header {
