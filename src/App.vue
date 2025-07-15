@@ -6,6 +6,7 @@
     <main class="main">
       <header class="header">
         <h1>{{ $t('editor.title') }}</h1>
+        <button class="create-command-btn" @click="createAndEditCommand">+ {{ $t('editor.createCommand') }}</button>
         <div class="header-controls">
           <div class="lang-dropdown" ref="langDropdownRef">
             <button class="lang-btn" @click="toggleLangMenu">
@@ -47,19 +48,20 @@
         <p style="color: red">{{ $t('editor.error') }}: {{ error }}</p>
       </div>
       <div v-else>
-        <div v-if="selectedIndex !== null">
-          <CommandEditor
-            :command="commands[selectedIndex]"
-            :isNew="isNewCommand"
-            @save="saveCommand"
-            @cancel="cancelEdit"
-          />
-        </div>
-        <div v-else>
-          <div class="empty-editor">
-            <p>{{ $t('editor.selectOrCreate') }}</p>
-          </div>
-        </div>
+        <CommandEditor
+          v-if="selectedIndex !== null"
+          :command="commands[selectedIndex]"
+          :isNew="isNewCommand"
+          @save="saveCommand"
+          @cancel="cancelEdit"
+        />
+        <CommandEditor
+          v-else
+          :command="{ name: '', description: '', context: 'server', ephemeral: false, options: [], actions: [], conditions: [] }"
+          :isNew="true"
+          @save="saveCommand"
+          @cancel="cancelEdit"
+        />
       </div>
       <ModalSaved :visible="showModal" :code="savedCode" @close="showModal = false" />
     </main>
@@ -129,6 +131,15 @@ function selectCommandFromMenu(idx) {
   selectedIndex.value = idx;
   editingIndex.value = null;
   showCommandMenu.value = false;
+}
+
+function createAndEditCommand() {
+  commands.value.push({
+    name: '', description: '', context: 'server', ephemeral: false,
+    options: [], actions: [], conditions: []
+  });
+  selectedIndex.value = commands.value.length - 1;
+  isNewCommand.value = true;
 }
 
 onMounted(async () => {
@@ -414,5 +425,20 @@ code {
 }
 .command-menu-label {
   font-weight: 600;
+}
+.create-command-btn {
+  background: #5865f2;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 18px;
+  font-size: 1.1em;
+  font-weight: 600;
+  margin-left: 24px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.create-command-btn:hover {
+  background: #4752c4;
 }
 </style> 

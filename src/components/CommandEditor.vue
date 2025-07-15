@@ -267,11 +267,20 @@ onUnmounted(() => {
   cursor: pointer;
 }
 .workflow-canvas {
-  background: repeating-linear-gradient(0deg, #23272b, #23272b 24px, #262a30 24px, #262a30 48px), repeating-linear-gradient(90deg, #23272b, #23272b 24px, #262a30 24px, #262a30 48px);
+  background: #23272b;
   border-radius: 10px;
   min-height: 600px;
   padding: 0;
   margin-bottom: 0;
+  box-shadow: 0 2px 16px #0004;
+  border: 2px solid #2e3338;
+  position: relative;
+  /* сетка с точками */
+  background-image:
+    radial-gradient(circle, #444 1px, transparent 1.5px),
+    radial-gradient(circle, #444 1px, transparent 1.5px);
+  background-size: 32px 32px;
+  background-position: 0 0, 16px 16px;
 }
 .node {
   display: flex;
