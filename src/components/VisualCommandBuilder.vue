@@ -1157,6 +1157,7 @@ saveToHistory()
   display: flex;
   flex: 1;
   overflow: hidden;
+  min-width: 0;
 }
 
 .palette {
@@ -1165,6 +1166,7 @@ saveToHistory()
   border-right: 1px solid #404040;
   padding: 1rem;
   overflow-y: auto;
+  flex-shrink: 0;
 }
 
 .palette h3 {
@@ -1223,8 +1225,12 @@ saveToHistory()
 }
 
 .canvas-container {
-  flex: 1;
+  flex: 1 1 0%;
+  min-width: 0;
+  min-height: 0;
   position: relative;
+  display: flex;
+  flex-direction: column;
 }
 
 .canvas {
@@ -1242,6 +1248,7 @@ saveToHistory()
   border-left: 1px solid #404040;
   display: flex;
   flex-direction: column;
+  flex-shrink: 0;
 }
 
 .sidebar-header {
