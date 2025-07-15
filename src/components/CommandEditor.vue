@@ -38,9 +38,10 @@ const localCommand = reactive(JSON.parse(JSON.stringify(props.command || {
   options: [], actions: [], conditions: []
 })));
 watch(() => props.command, (val) => {
+  console.log('Selected command:', val);
   Object.assign(localCommand, JSON.parse(JSON.stringify(val)));
   // Синхронизировать визуальные узлы и edges с данными команды
-  nodes.value = [
+  const newNodes = [
     ...(localCommand.options || []).map((opt, i) => ({
       id: `opt${i+1}`,
       data: { label: `Option: ${opt.name || opt.type}` },
@@ -57,11 +58,16 @@ watch(() => props.command, (val) => {
       position: { x: 560, y: 60 + i*60 }
     })),
   ];
+  if (newNodes.length === 0) {
+    newNodes.push({ id: 'empty', data: { label: 'Перетащите блок из панели слева' }, position: { x: 300, y: 200 } });
+  }
+  nodes.value = newNodes;
   if (localCommand._edges) {
     edges.value = localCommand._edges.map((e, i) => ({ id: `e${e.source}-${e.target}-${i}`, source: e.source, target: e.target }));
   } else {
     edges.value = [];
   }
+  console.log('Nodes after update:', nodes.value);
 });
 watch(nodes, (val) => {
   // Сохранять изменения в nodes обратно в localCommand
