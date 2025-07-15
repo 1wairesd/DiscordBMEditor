@@ -31,31 +31,31 @@
         </div>
         <div class="palette-scroll">
           <template v-if="paletteTab==='options'">
-            <div class="palette-section">
-              <h4>Опции</h4>
+        <div class="palette-section">
+          <h4>Опции</h4>
               <div v-for="option in availableOptions" :key="option.type" class="palette-item" draggable="true" @dragstart="onDragStart($event, option)">
-                <div class="palette-item-icon">{{ option.icon }}</div>
-                <div class="palette-item-label">{{ option.label }}</div>
-              </div>
-            </div>
+            <div class="palette-item-icon">{{ option.icon }}</div>
+            <div class="palette-item-label">{{ option.label }}</div>
+          </div>
+        </div>
           </template>
           <template v-else-if="paletteTab==='actions'">
-            <div class="palette-section">
-              <h4>Действия</h4>
+        <div class="palette-section">
+          <h4>Действия</h4>
               <div v-for="action in availableActions" :key="action.type" class="palette-item" draggable="true" @dragstart="onDragStart($event, action)">
-                <div class="palette-item-icon">{{ action.icon }}</div>
-                <div class="palette-item-label">{{ action.label }}</div>
-              </div>
-            </div>
+            <div class="palette-item-icon">{{ action.icon }}</div>
+            <div class="palette-item-label">{{ action.label }}</div>
+          </div>
+        </div>
           </template>
           <template v-else>
-            <div class="palette-section">
-              <h4>Условия</h4>
+        <div class="palette-section">
+          <h4>Условия</h4>
               <div v-for="condition in availableConditions" :key="condition.type" class="palette-item" draggable="true" @dragstart="onDragStart($event, condition)">
-                <div class="palette-item-icon">{{ condition.icon }}</div>
-                <div class="palette-item-label">{{ condition.label }}</div>
-              </div>
-            </div>
+            <div class="palette-item-icon">{{ condition.icon }}</div>
+            <div class="palette-item-label">{{ condition.label }}</div>
+          </div>
+        </div>
           </template>
         </div>
       </div>
@@ -84,6 +84,7 @@
               :data="props.data"
               :selected="props.selected"
               @update="updateNodeData"
+              @delete="() => handleNodeDelete(props.id)"
             />
           </template>
         </VueFlow>
@@ -463,7 +464,6 @@
 
           <!-- Common Actions -->
           <div class="form-actions">
-            <button @click="deleteNode" class="btn btn-danger">Удалить блок</button>
             <button @click="duplicateNode" class="btn btn-secondary">Дублировать</button>
           </div>
         </div>
@@ -738,16 +738,11 @@ const updateNodeData = (nodeId, newData) => {
   }
 }
 
-const deleteNode = () => {
-  if (selectedNode.value) {
-    // Remove the node and all connected edges
-    elements.value = elements.value.filter(el => 
-      el.id !== selectedNode.value.id && 
-      (el.source !== selectedNode.value.id && el.target !== selectedNode.value.id)
-    )
-    selectedNode.value = null
-    saveToHistory()
-  }
+function handleNodeDelete(nodeId) {
+  // Удаляем node и все связанные edges
+  elements.value = elements.value.filter(el => el.id !== nodeId && (el.source !== nodeId && el.target !== nodeId))
+  if (selectedNode.value && selectedNode.value.id === nodeId) selectedNode.value = null
+  saveToHistory()
 }
 
 const duplicateNode = () => {
@@ -1065,6 +1060,18 @@ const downloadPreview = () => {
 
 // Initialize history
 saveToHistory()
+
+// Глобальный обработчик клавиш для удаления выделенного блока
+onMounted(() => {
+  const keyHandler = (e) => {
+    if ((e.key === 'Delete' || e.key === 'Backspace') && selectedNode.value) {
+      handleNodeDelete(selectedNode.value.id)
+    }
+  }
+  window.addEventListener('keydown', keyHandler)
+  // Очищаем при демонтировании
+  onUnmounted(() => window.removeEventListener('keydown', keyHandler))
+})
 </script>
 
 <style scoped>

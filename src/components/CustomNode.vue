@@ -1,5 +1,5 @@
 <template>
-  <div class="custom-node" :class="{ selected }">
+  <div class="custom-node" :class="{ selected }" @contextmenu.prevent="onContextMenu">
     <div class="node-header" :class="`type-${data.type}`">
       <div class="node-icon">{{ getIcon() }}</div>
       <div class="node-title">{{ data.name || getDefaultName() }}</div>
@@ -46,16 +46,16 @@
       <Handle type="target" :position="Position.Top" id="in-top" :style="{ left: '50%' }" />
       <!-- Bottom handles -->
       <Handle type="source" :position="Position.Bottom" id="out-bottom" :style="{ left: '50%' }" />
-      <!-- Left handles -->
-      <Handle type="target" :position="Position.Left" id="in-left" :style="{ top: '50%' }" />
-      <!-- Right handles -->
-      <Handle type="source" :position="Position.Right" id="out-right" :style="{ top: '50%' }" />
+    </div>
+    <!-- Контекстное меню -->
+    <div v-if="showMenu" class="node-context-menu" :style="menuStyle">
+      <button @click="deleteNode">Удалить блок</button>
     </div>
   </div>
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { ref, computed } from 'vue'
 import { Handle, Position } from '@vue-flow/core'
 
 const props = defineProps({
@@ -68,6 +68,23 @@ const props = defineProps({
     default: false
   }
 })
+
+const emit = defineEmits(['delete'])
+const showMenu = ref(false)
+const menuStyle = ref({})
+function onContextMenu(e) {
+  showMenu.value = true
+  menuStyle.value = { left: e.offsetX + 'px', top: e.offsetY + 'px' }
+  document.addEventListener('click', closeMenu)
+}
+function closeMenu() {
+  showMenu.value = false
+  document.removeEventListener('click', closeMenu)
+}
+function deleteNode() {
+  emit('delete')
+  closeMenu()
+}
 
 const getIcon = () => {
   switch (props.data.type) {
@@ -274,6 +291,34 @@ const getConditionTypeLabel = () => {
   right: -6px;
   top: 50%;
   transform: translateY(-50%);
+}
+
+.node-context-menu {
+  position: absolute;
+  z-index: 1000;
+  background: #23272b;
+  border: 1px solid #404040;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+  min-width: 120px;
+  padding: 6px 0;
+  top: 0;
+  left: 0;
+}
+.node-context-menu button {
+  width: 100%;
+  background: none;
+  border: none;
+  color: #ef4444;
+  padding: 8px 16px;
+  text-align: left;
+  font-size: 1em;
+  cursor: pointer;
+  border-radius: 0;
+}
+.node-context-menu button:hover {
+  background: #ef4444;
+  color: #fff;
 }
 
 /* Responsive adjustments */
