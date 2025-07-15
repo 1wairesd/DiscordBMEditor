@@ -26,171 +26,8 @@
     </div>
 
     <div class="main-area">
-      <!-- Sidebar with command list (only in JSON editor) -->
-      <div v-if="activeTab === 'json'" class="sidebar">
-        <div class="sidebar-title">Список команд</div>
-        <div class="command-list">
-          <div 
-            v-for="(command, idx) in commands" 
-            :key="command.name + idx"
-            :class="['command-list-item', { selected: idx === selectedCommandIndex }]"
-            @click="selectCommand(idx)"
-          >
-            {{ command.name || 'Без названия' }}
-          </div>
-        </div>
-      </div>
-
-      <!-- JSON Editor Tab -->
-      <div v-if="activeTab === 'json'" class="json-editor-tab">
-        <div class="editor-container">
-          <div class="editor-header">
-            <h2>Редактор команд</h2>
-            <div class="editor-actions">
-              <button @click="addCommand" class="btn btn-primary">Добавить команду</button>
-              <button @click="exportYaml" class="btn btn-secondary">Экспорт YAML</button>
-            </div>
-          </div>
-
-          <div class="commands-list">
-            <div 
-              v-for="(command, index) in commands" 
-              :key="index" 
-              class="command-item"
-              :ref="el => commandRefs[index] = el"
-            >
-              <div class="command-header">
-                <h3>{{ command.name || 'Без названия' }}</h3>
-                <div class="command-actions">
-                  <button @click="duplicateCommand(index)" class="btn btn-small">Дублировать</button>
-                  <button @click="removeCommand(index)" class="btn btn-small btn-danger">Удалить</button>
-                </div>
-              </div>
-
-              <div class="command-content">
-                <div class="form-group">
-                  <label>Название команды:</label>
-                  <input v-model="command.name" type="text" placeholder="Введите название команды" />
-                </div>
-
-                <div class="form-group">
-                  <label>Описание:</label>
-                  <textarea v-model="command.description" placeholder="Введите описание команды" rows="2"></textarea>
-                </div>
-
-                <!-- Options Section -->
-                <div class="section">
-                  <h4>Опции</h4>
-                  <div class="options-list">
-                    <div v-for="(option, optIndex) in command.options" :key="optIndex" class="option-item">
-                      <div class="option-header">
-                        <input v-model="option.name" placeholder="Название опции" />
-                        <button @click="removeOption(command, optIndex)" class="btn btn-small btn-danger">Удалить</button>
-                      </div>
-                      <div class="option-content">
-                        <input v-model="option.description" placeholder="Описание опции" />
-                        <select v-model="option.type">
-                          <option value="string">Строка</option>
-                          <option value="number">Число</option>
-                          <option value="boolean">Да/Нет</option>
-                          <option value="player">Игрок</option>
-                          <option value="world">Мир</option>
-                        </select>
-                        <label>
-                          <input v-model="option.required" type="checkbox" />
-                          Обязательная
-                        </label>
-                      </div>
-                    </div>
-                    <button @click="addOption(command)" class="btn btn-small">Добавить опцию</button>
-                  </div>
-                </div>
-
-                <!-- Actions Section -->
-                <div class="section">
-                  <h4>Действия</h4>
-                  <div class="actions-list">
-                    <div v-for="(action, actIndex) in command.actions" :key="actIndex" class="action-item">
-                      <div class="action-header">
-                        <select v-model="action.type">
-                          <option value="message">Сообщение</option>
-                          <option value="command">Команда</option>
-                          <option value="teleport">Телепортация</option>
-                          <option value="give">Выдать предмет</option>
-                          <option value="effect">Эффект</option>
-                          <option value="sound">Звук</option>
-                        </select>
-                        <button @click="removeAction(command, actIndex)" class="btn btn-small btn-danger">Удалить</button>
-                      </div>
-                      <div class="action-content">
-                        <input v-model="action.message" placeholder="Сообщение" v-if="action.type === 'message'" />
-                        <input v-model="action.command" placeholder="Команда" v-if="action.type === 'command'" />
-                        <div v-if="action.type === 'teleport'" class="coordinates">
-                          <input v-model.number="action.x" type="number" placeholder="X" />
-                          <input v-model.number="action.y" type="number" placeholder="Y" />
-                          <input v-model.number="action.z" type="number" placeholder="Z" />
-                        </div>
-                        <div v-if="action.type === 'give'" class="give-item">
-                          <input v-model="action.item" placeholder="Предмет" />
-                          <input v-model.number="action.amount" type="number" placeholder="Количество" />
-                        </div>
-                        <input v-model.number="action.delay" type="number" placeholder="Задержка (сек)" />
-                      </div>
-                    </div>
-                    <button @click="addAction(command)" class="btn btn-small">Добавить действие</button>
-                  </div>
-                </div>
-
-                <!-- Conditions Section -->
-                <div class="section">
-                  <h4>Условия</h4>
-                  <div class="conditions-list">
-                    <div v-for="(condition, condIndex) in command.conditions" :key="condIndex" class="condition-item">
-                      <div class="condition-header">
-                        <select v-model="condition.type">
-                          <option value="permission">Права</option>
-                          <option value="world">Мир</option>
-                          <option value="gamemode">Режим игры</option>
-                          <option value="time">Время</option>
-                          <option value="weather">Погода</option>
-                          <option value="custom">Пользовательское</option>
-                        </select>
-                        <button @click="removeCondition(command, condIndex)" class="btn btn-small btn-danger">Удалить</button>
-                      </div>
-                      <div class="condition-content">
-                        <input v-model="condition.permission" placeholder="Право" v-if="condition.type === 'permission'" />
-                        <input v-model="condition.world" placeholder="Мир" v-if="condition.type === 'world'" />
-                        <select v-model="condition.gamemode" v-if="condition.type === 'gamemode'">
-                          <option value="SURVIVAL">Выживание</option>
-                          <option value="CREATIVE">Творческий</option>
-                          <option value="ADVENTURE">Приключения</option>
-                          <option value="SPECTATOR">Наблюдатель</option>
-                        </select>
-                        <select v-model="condition.time" v-if="condition.type === 'time'">
-                          <option value="day">День</option>
-                          <option value="night">Ночь</option>
-                          <option value="morning">Утро</option>
-                          <option value="evening">Вечер</option>
-                        </select>
-                        <select v-model="condition.weather" v-if="condition.type === 'weather'">
-                          <option value="clear">Ясно</option>
-                          <option value="rain">Дождь</option>
-                          <option value="thunder">Гроза</option>
-                        </select>
-                        <textarea v-model="condition.expression" placeholder="JavaScript выражение" v-if="condition.type === 'custom'" rows="2"></textarea>
-                      </div>
-                    </div>
-                    <button @click="addCondition(command)" class="btn btn-small">Добавить условие</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Visual Editor Tab -->
-      <div v-if="activeTab === 'visual'" class="visual-editor-tab">
+      <!-- Visual Editor Tab Only -->
+      <div class="visual-editor-tab visual-editor-full">
         <VisualCommandBuilder />
       </div>
     </div>
@@ -702,45 +539,24 @@ body {
 
 .main-area {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   flex: 1;
   min-height: 0;
   height: 100%;
 }
-.sidebar {
-  width: 220px;
-  background: #23272b;
-  border-right: 1.5px solid #23272b;
-  padding: 18px 8px 8px 8px;
-  box-sizing: border-box;
-  min-height: 100%;
+.visual-editor-tab,
+.visual-editor-full {
+  flex: 1 1 100%;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
   display: flex;
   flex-direction: column;
-  gap: 12px;
 }
-.sidebar-title {
-  color: #b9bbbe;
-  font-size: 1.05em;
-  margin-bottom: 8px;
-  font-weight: 600;
-}
-.command-list {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-.command-list-item {
-  background: #2d2d2d;
-  color: #fff;
-  border-radius: 6px;
-  padding: 8px 12px;
-  cursor: pointer;
-  font-size: 1em;
-  transition: background 0.2s;
-}
-.command-list-item.selected, .command-list-item:hover {
-  background: #3b82f6;
-  color: #fff;
+.sidebar,
+.json-editor-tab {
+  display: none !important;
 }
 
 /* Responsive adjustments */
