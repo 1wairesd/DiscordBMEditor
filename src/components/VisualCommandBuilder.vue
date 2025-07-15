@@ -542,14 +542,26 @@ const availableConditions = ref([
   { type: 'condition', label: 'Шанс (chance)', icon: '🎲' }
 ])
 
+const ROOT_NODE_ID = 'node-root'
+const rootNode = {
+  id: ROOT_NODE_ID,
+  type: 'custom',
+  position: { x: 400, y: 200 },
+  data: {
+    type: 'root',
+    name: '/',
+    description: 'Drag and drop different <span style="color:#d946ef">options</span> and <span style="color:#3b82f6">actions</span> to add them to your command. Connect the corresponding colors to create your command.'
+  }
+}
+
 // Vue Flow elements
-const elements = ref([])
-const selectedNode = ref(null)
+const elements = ref([rootNode])
+const selectedNode = ref(rootNode)
 const showPreview = ref(false)
 const previewTab = ref('yaml')
 const menuOpen = ref(false)
 const paletteTab = ref('actions')
-const selectedNodeIds = ref([])
+const selectedNodeIds = ref([ROOT_NODE_ID])
 
 // History for undo/redo
 const history = ref([])
@@ -598,12 +610,24 @@ onMounted(() => {
   const saved = localStorage.getItem('discordbm-schema');
   if (saved) {
     try {
-      elements.value = JSON.parse(saved);
+      const loaded = JSON.parse(saved);
+      if (Array.isArray(loaded) && loaded.length > 0) {
+        // Гарантируем наличие rootNode
+        if (!loaded.find(el => el.id === ROOT_NODE_ID)) {
+          loaded.unshift(rootNode)
+        }
+        elements.value = loaded
+      } else {
+        elements.value = [rootNode]
+      }
     } catch (e) {
-      // Если localStorage повреждён — игнорируем
-      elements.value = [];
+      elements.value = [rootNode]
     }
+  } else {
+    elements.value = [rootNode]
   }
+  selectedNode.value = elements.value.find(el => el.id === ROOT_NODE_ID)
+  selectedNodeIds.value = [ROOT_NODE_ID]
 })
 
 // Drag and drop handlers
@@ -692,8 +716,9 @@ const onNodeClick = (event, node) => {
   if (found) selectedNode.value = found
 }
 
+// Не сбрасываем выделение при клике по пустому месту
 const onPaneClick = () => {
-  selectedNode.value = null
+  // ничего не делаем, выделение не сбрасывается
 }
 
 const onConnectStart = (event, params) => {
@@ -741,14 +766,15 @@ const updateNodeData = (nodeId, newData) => {
   }
 }
 
+// Запретить удаление rootNode
 const deleteNode = () => {
-  if (selectedNode.value) {
-    // Remove the node and all connected edges
+  if (selectedNode.value && selectedNode.value.id !== ROOT_NODE_ID) {
     elements.value = elements.value.filter(el => 
       el.id !== selectedNode.value.id && 
       (el.source !== selectedNode.value.id && el.target !== selectedNode.value.id)
     )
-    selectedNode.value = null
+    selectedNode.value = elements.value.find(el => el.id === ROOT_NODE_ID)
+    selectedNodeIds.value = [ROOT_NODE_ID]
     saveToHistory()
   }
 }
