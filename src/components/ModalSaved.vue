@@ -2,15 +2,13 @@
   <div class="modal-backdrop" v-if="visible">
     <div class="modal-content">
       <button class="close-btn" @click="close">×</button>
-      <h2>Данные были сохранены.</h2>
-      <p>Выполните эту команду на вашем сервере для применения изменений:</p>
-      <pre class="command" @click="copyCommand" :title="copied ? 'Скопировано!' : 'Кликните для копирования'">
+      <h2>{{ $t('editor.saved') }}</h2>
+      <p>{{ $t('editor.command') }}</p>
+      <pre class="command" @click="copyCommand" :title="copied ? $t('editor.copied') : $t('editor.copy')">
         /discordbmv applyedits {{ code }}
-        <span v-if="copied" class="copied">Скопировано!</span>
+        <span v-if="copied" class="copied">{{ $t('editor.copied') }}</span>
       </pre>
-      <p class="note">
-        <b>Заметка:</b> после выполнения команды <code>applyedits</code>, вам нужно сгенерировать другой URL для продолжения работы над Данными.
-      </p>
+      <p class="note" v-html="$t('editor.note')" />
     </div>
   </div>
 </template>

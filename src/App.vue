@@ -1,7 +1,7 @@
 <template>
   <div class="layout">
     <aside class="sidebar">
-      <h2>Команды</h2>
+      <h2>{{ $t('editor.title') }}</h2>
       <CommandList
         :commands="commands"
         :selectedIndex="selectedIndex"
@@ -14,17 +14,21 @@
     </aside>
     <main class="main">
       <header class="header">
-        <h1>DiscordBM Editor</h1>
-        <button v-if="commands.length" @click="saveEdits">💾 Сохранить все изменения</button>
+        <h1>{{ $t('editor.title') }}</h1>
+        <select v-model="lang" @change="changeLang" class="lang-select">
+          <option value="en">EN</option>
+          <option value="ru">RU</option>
+        </select>
+        <button v-if="commands.length" @click="saveEdits">💾 {{ $t('editor.saveAll') }}</button>
       </header>
       <div v-if="!code">
-        <p>Откройте редактор по ссылке вида <code>#код</code> (например, https://your-discordbm-editor.onrender.com/#abcdef123456)</p>
+        <p>{{ $t('editor.openByLink') }} <code>#код</code> (https://your-discordbm-editor.onrender.com/#abcdef123456)</p>
       </div>
       <div v-else-if="loading">
-        <p>Загрузка данных...</p>
+        <p>{{ $t('editor.loading') }}</p>
       </div>
       <div v-else-if="error">
-        <p style="color: red">Ошибка: {{ error }}</p>
+        <p style="color: red">{{ $t('editor.error') }}: {{ error }}</p>
       </div>
       <div v-else>
         <div v-if="editingIndex !== null">
@@ -37,12 +41,12 @@
         </div>
         <div v-else-if="selectedIndex !== null">
           <div class="empty-editor">
-            <p>Выберите команду для редактирования или нажмите ✏️</p>
+            <p>{{ $t('editor.selectToEdit') }}</p>
           </div>
         </div>
         <div v-else>
           <div class="empty-editor">
-            <p>Выберите или создайте команду</p>
+            <p>{{ $t('editor.selectOrCreate') }}</p>
           </div>
         </div>
       </div>
@@ -53,10 +57,18 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import axios from 'axios';
 import CommandList from './components/CommandList.vue';
 import CommandEditor from './components/CommandEditor.vue';
 import ModalSaved from './components/ModalSaved.vue';
+
+const { locale } = useI18n();
+const lang = ref(locale.value);
+function changeLang() {
+  locale.value = lang.value;
+  localStorage.setItem('language', lang.value);
+}
 
 const code = window.location.hash.replace('#', '');
 const loading = ref(false);
@@ -228,5 +240,14 @@ code {
   background: #111;
   padding: 2px 6px;
   border-radius: 4px;
+}
+.lang-select {
+  background: #23272b;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 1rem;
+  margin-right: 16px;
 }
 </style> 
