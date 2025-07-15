@@ -551,7 +551,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue'
+import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick, provide } from 'vue'
 import { VueFlow, ConnectionMode } from '@vue-flow/core'
 import '@vue-flow/core/dist/style.css'
 import '@vue-flow/core/dist/theme-default.css'
@@ -602,21 +602,24 @@ const rootNode = {
 // Vue Flow elements
 const elements = ref([])
 const selectedNodeIds = ref([])
-const selectedBlock = ref(null)
+const selectedNode = computed(() => elements.value.find(el => el.id === selectedNodeIds.value[0]))
 const showPreview = ref(false)
 const previewTab = ref('yaml')
 const menuOpen = ref(false)
 const paletteTab = ref('actions')
 const hasRootNode = computed(() => elements.value.some(el => el.id === ROOT_NODE_ID))
+const selectedBlock = ref(null)
+provide('selectedBlock', selectedBlock)
 
 function createRootCommand() {
   if (!hasRootNode.value) {
-    elements.value = [{
+    const root = {
       ...rootNode,
       data: { ...rootNode.data }
-    }]
+    }
+    elements.value = [root]
     selectedNodeIds.value = [ROOT_NODE_ID]
-    selectedBlock.value = elements.value[0]
+    selectedBlock.value = root
     saveToHistory()
   }
 }
@@ -685,7 +688,6 @@ onMounted(() => {
     elements.value = [rootNode]
   }
   selectedNodeIds.value = [ROOT_NODE_ID]
-  selectedBlock.value = elements.value.find(el => el.id === ROOT_NODE_ID)
 })
 
 // Drag and drop handlers
@@ -716,7 +718,6 @@ const onDrop = (event) => {
     const customNodes = elements.value.filter(el => el.type === 'custom');
     if (customNodes.length === 1 && customNodes[0].id === ROOT_NODE_ID) {
       selectedNodeIds.value = [ROOT_NODE_ID];
-      selectedBlock.value = customNodes[0];
     }
   }
   const newNode = {
@@ -733,7 +734,6 @@ const onDrop = (event) => {
   
   elements.value.push(newNode)
   selectedNodeIds.value = [newNode.id];
-  selectedBlock.value = newNode
   saveToHistory()
 }
 
@@ -783,12 +783,12 @@ const getDefaultDataForType = (type) => {
 
 // Node interaction handlers
 const onNodeClick = async (event, node) => {
-  const found = elements.value.find(el => el.id === node.id)
-  if (found) {
+  const block = elements.value.find(el => el.id === node.id)
+  if (block) {
     selectedNodeIds.value = [node.id]
     selectedBlock.value = null
     await nextTick()
-    selectedBlock.value = found
+    selectedBlock.value = block
   }
 }
 
@@ -845,8 +845,8 @@ const updateNodeData = (nodeId, newData) => {
 
 // Запретить удаление rootNode
 const deleteNode = () => {
-  if (selectedBlock.value && selectedBlock.value.id !== ROOT_NODE_ID) {
-    const deletedId = selectedBlock.value.id;
+  if (selectedNode.value && selectedNode.value.id !== ROOT_NODE_ID) {
+    const deletedId = selectedNode.value.id;
     elements.value = elements.value.filter(el => 
       el.id !== deletedId && 
       (el.source !== deletedId && el.target !== deletedId)
@@ -855,18 +855,15 @@ const deleteNode = () => {
     const customNodes = elements.value.filter(el => el.type === 'custom');
     if (customNodes.length === 1 && customNodes[0].id === ROOT_NODE_ID) {
       selectedNodeIds.value = [ROOT_NODE_ID];
-      selectedBlock.value = customNodes[0];
     } else if (customNodes.length > 0) {
       selectedNodeIds.value = [customNodes[0].id];
-      selectedBlock.value = customNodes[0];
     } else {
       // Если вообще нет custom-блоков (маловероятно), создаём root
       elements.value = [rootNode];
       selectedNodeIds.value = [ROOT_NODE_ID];
-      selectedBlock.value = elements.value[0];
     }
     saveToHistory();
-  } else if (selectedBlock.value && selectedBlock.value.id === ROOT_NODE_ID) {
+  } else if (selectedNode.value && selectedNode.value.id === ROOT_NODE_ID) {
     // Удаляем rootNode — сбрасываем всё
     elements.value = []
     selectedNodeIds.value = []
@@ -876,8 +873,8 @@ const deleteNode = () => {
 }
 
 const duplicateNode = () => {
-  if (selectedBlock.value) {
-    const originalNode = selectedBlock.value
+  if (selectedNode.value) {
+    const originalNode = selectedNode.value
     const newNode = {
       id: `node-${nodeIdCounter++}`,
       type: 'custom',
@@ -892,7 +889,6 @@ const duplicateNode = () => {
     }
     elements.value.push(newNode)
     selectedNodeIds.value = [newNode.id]
-    selectedBlock.value = newNode
     saveToHistory()
   }
 }
@@ -1194,9 +1190,9 @@ saveToHistory()
 
 // Удаление по клавише Delete/Backspace
 function handleKeydown(e) {
-  if ((e.key === 'Delete' || e.key === 'Backspace') && selectedBlock.value) {
+  if ((e.key === 'Delete' || e.key === 'Backspace') && selectedNode.value) {
     // Запретить удаление rootNode
-    if (selectedBlock.value.id === ROOT_NODE_ID) return;
+    if (selectedNode.value.id === ROOT_NODE_ID) return;
     deleteNode();
   }
 }
@@ -1327,7 +1323,6 @@ function selectCommand(idx) {
     }
   }
   selectedNodeIds.value = [ROOT_NODE_ID]
-  selectedBlock.value = elements.value[0]
   saveToHistory()
   showCommandsModal.value = false
 }
