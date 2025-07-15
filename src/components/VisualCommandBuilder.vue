@@ -79,8 +79,6 @@
               @update="updateNodeData"
             />
           </template>
-          
-          <Background />
         </VueFlow>
       </div>
 
@@ -346,7 +344,7 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import { VueFlow, Background } from '@vue-flow/core'
+import { VueFlow } from '@vue-flow/core'
 import '@vue-flow/core/dist/style.css'
 import '@vue-flow/core/dist/theme-default.css'
 import CustomNode from './CustomNode.vue'
@@ -386,7 +384,7 @@ const onDrop = (event) => {
   const blockData = JSON.parse(event.dataTransfer.getData('application/vueflow'))
   
   // Get the canvas element to calculate position
-  const canvas = event.target.closest('.vue-flow')
+  const canvas = event.target.closest('.vue-flow__viewport')
   const rect = canvas.getBoundingClientRect()
   
   // Calculate position relative to the canvas
@@ -756,6 +754,9 @@ const convertFlowToYaml = (elements) => {
   width: 100%;
   height: 100%;
   background: #1a1a1a;
+  background-image: 
+    radial-gradient(circle at 25% 25%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 75% 75%, rgba(16, 185, 129, 0.1) 0%, transparent 50%);
 }
 
 .properties-sidebar {
