@@ -92,7 +92,7 @@
       </div>
 
       <!-- Properties Sidebar -->
-      <div v-if="selectedNode && hasRootNode" class="properties-sidebar">
+      <div v-if="selectedNode && hasRootNode" class="properties-sidebar" :key="selectedNode?.id">
         <div class="sidebar-header">
           <h3>Свойства блока</h3>
           <button @click="closeSidebar" class="btn-close">×</button>
@@ -781,6 +781,7 @@ const getDefaultDataForType = (type) => {
 const onNodeClick = (event, node) => {
   // node.id — id выделенного блока
   if (elements.value.find(el => el.id === node.id)) {
+    // Всегда обновляем, даже если выбран тот же id
     selectedNodeIds.value = [node.id]
   }
 }
