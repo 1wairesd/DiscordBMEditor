@@ -57,12 +57,6 @@
               </div>
             </div>
           </template>
-          <div class="validation-status">
-            <h4>Статус схемы</h4>
-            <div class="validation-success">
-              ✅ Схема корректна
-            </div>
-          </div>
         </div>
       </div>
 
