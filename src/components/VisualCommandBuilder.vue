@@ -112,6 +112,7 @@
               <label>Контекст:</label>
               <select v-model="selectedNode.data.context" class="form-select" @change="saveToHistory">
                 <option value="server">server</option>
+                <option value="dm">dm</option>
                 <option value="both">both</option>
               </select>
             </div>
@@ -579,12 +580,12 @@ const rootNode = {
 
 // Vue Flow elements
 const elements = ref([rootNode])
-const selectedNode = ref(rootNode)
+const selectedNodeIds = ref([ROOT_NODE_ID])
+const selectedNode = computed(() => elements.value.find(el => el.id === selectedNodeIds.value[0]))
 const showPreview = ref(false)
 const previewTab = ref('yaml')
 const menuOpen = ref(false)
 const paletteTab = ref('actions')
-const selectedNodeIds = ref([ROOT_NODE_ID])
 
 // History for undo/redo
 const history = ref([])
@@ -649,7 +650,6 @@ onMounted(() => {
   } else {
     elements.value = [rootNode]
   }
-  selectedNode.value = elements.value.find(el => el.id === ROOT_NODE_ID)
   selectedNodeIds.value = [ROOT_NODE_ID]
 })
 
@@ -739,8 +739,9 @@ const getDefaultDataForType = (type) => {
 // Node interaction handlers
 const onNodeClick = (event, node) => {
   // node.id — id выделенного блока
-  const found = elements.value.find(el => el.id === node.id)
-  if (found) selectedNode.value = found
+  if (elements.value.find(el => el.id === node.id)) {
+    selectedNodeIds.value = [node.id]
+  }
 }
 
 // Не сбрасываем выделение при клике по пустому месту
@@ -783,13 +784,14 @@ const onConnect = (params) => {
 
 // Sidebar handlers
 const closeSidebar = () => {
-  selectedNode.value = null
+  // Не сбрасываем выделение, чтобы всегда был выбран rootNode
+  selectedNodeIds.value = [ROOT_NODE_ID]
 }
 
 const updateNodeData = (nodeId, newData) => {
   const node = elements.value.find(el => el.id === nodeId)
   if (node) {
-    node.data = { ...node.data, ...newData }
+    Object.assign(node.data, newData)
   }
 }
 
@@ -800,7 +802,6 @@ const deleteNode = () => {
       el.id !== selectedNode.value.id && 
       (el.source !== selectedNode.value.id && el.target !== selectedNode.value.id)
     )
-    selectedNode.value = elements.value.find(el => el.id === ROOT_NODE_ID)
     selectedNodeIds.value = [ROOT_NODE_ID]
     saveToHistory()
   }
@@ -822,7 +823,7 @@ const duplicateNode = () => {
       }
     }
     elements.value.push(newNode)
-    selectedNode.value = newNode
+    selectedNodeIds.value = [newNode.id]
     saveToHistory()
   }
 }
