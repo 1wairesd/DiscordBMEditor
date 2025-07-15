@@ -24,7 +24,7 @@
             </select>
           </button>
           <button class="doc-btn" @click="openDoc" title="{{$t('doc.label')}}">
-            <img src="/ws-logo.png" alt="doc" class="doc-icon" />
+            <img :src="wsLogo" alt="doc" class="doc-icon" />
             <span class="doc-label">{{ $t('doc.label') }}</span>
           </button>
         </div>
@@ -65,6 +65,7 @@
 </template>
 
 <script setup>
+import wsLogo from './assets/ws-logo.png';
 import { ref, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import axios from 'axios';
