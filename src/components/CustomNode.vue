@@ -2,11 +2,13 @@
   <div class="custom-node" :class="{ selected }">
     <div class="node-header" :class="`type-${data.type}`">
       <div class="node-icon">{{ getIcon() }}</div>
-      <div class="node-title">{{ data.name || getDefaultName() }}</div>
+      <div class="node-title" v-if="data.type === 'root'" v-html="data.name || getDefaultName()"></div>
+      <div class="node-title" v-else>{{ data.name || getDefaultName() }}</div>
     </div>
     
     <div class="node-content">
-      <div class="node-description">{{ data.description || getDefaultDescription() }}</div>
+      <div class="node-description" v-if="data.type === 'root'" v-html="data.description || getDefaultDescription()"></div>
+      <div class="node-description" v-else>{{ data.description || getDefaultDescription() }}</div>
       
       <!-- Option specific content -->
       <div v-if="data.type === 'option'" class="node-details">
