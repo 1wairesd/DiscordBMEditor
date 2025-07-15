@@ -14,7 +14,7 @@
     </aside>
     <main class="main">
       <header class="header">
-        <h1>DiscordBM Editor</h1>
+        <h1>Editor DiscordBM</h1>
         <button v-if="commands.length" @click="saveEdits">💾 Сохранить все изменения</button>
       </header>
       <div v-if="!code">
