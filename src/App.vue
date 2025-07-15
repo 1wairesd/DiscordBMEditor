@@ -137,8 +137,8 @@ body {
 }
 
 .header-content {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 1fr auto;
   align-items: center;
   max-width: 1400px;
   margin: 0 auto;
@@ -148,7 +148,6 @@ body {
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  flex: 1;
 }
 
 .btn.modern-save-btn {
@@ -163,6 +162,7 @@ body {
   transition: background 0.18s, box-shadow 0.18s, transform 0.12s;
   cursor: pointer;
   outline: none;
+  min-width: 160px;
 }
 .btn.modern-save-btn:hover, .btn.modern-save-btn:focus {
   background: linear-gradient(90deg, #2563eb 0%, #059669 100%);
