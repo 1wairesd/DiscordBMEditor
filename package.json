@@ -10,8 +10,7 @@
   },
   "dependencies": {
     "vue": "^3.4.0",
-    "axios": "^1.6.0",
-    "@vue-flow/core": "^1.29.2"
+    "axios": "^1.6.0"
   },
   "devDependencies": {
     "vite": "^5.0.0",
