@@ -140,8 +140,8 @@ body {
   display: grid;
   grid-template-columns: 1fr auto;
   align-items: center;
-  max-width: 1400px;
-  margin: 0 auto;
+  padding-right: 2vw;
+  padding-left: 2vw;
 }
 
 .modern-save {
