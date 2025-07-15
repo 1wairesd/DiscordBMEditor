@@ -42,10 +42,14 @@
     
     <!-- Connection handles -->
     <div class="node-handles">
-      <!-- Top handles -->
+      <!-- Top handle -->
       <Handle type="target" :position="Position.Top" id="in-top" :style="{ left: '50%' }" />
-      <!-- Bottom handles -->
+      <!-- Bottom handle -->
       <Handle type="source" :position="Position.Bottom" id="out-bottom" :style="{ left: '50%' }" />
+      <!-- Left handle -->
+      <Handle type="target" :position="Position.Left" id="in-left" :style="{ top: '50%' }" />
+      <!-- Right handle -->
+      <Handle type="source" :position="Position.Right" id="out-right" :style="{ top: '50%' }" />
     </div>
   </div>
 </template>
@@ -64,11 +68,6 @@ const props = defineProps({
     default: false
   }
 })
-
-const emit = defineEmits(['delete'])
-function deleteNode() {
-  emit('delete')
-}
 
 const getIcon = () => {
   switch (props.data.type) {

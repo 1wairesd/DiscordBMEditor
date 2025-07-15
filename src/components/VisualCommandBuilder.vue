@@ -82,10 +82,8 @@
           <template #node-custom="props">
             <CustomNode
               :data="props.data"
-              :selected="selectedNode && selectedNode.id === props.id"
+              :selected="props.selected"
               @update="updateNodeData"
-              @delete="() => handleNodeDelete(props.id)"
-              @select="() => handleNodeSelect(props.id)"
             />
           </template>
         </VueFlow>
@@ -465,7 +463,7 @@
 
           <!-- Common Actions -->
           <div class="form-actions">
-            <button @click="handleNodeDelete(selectedNode.value.id)" class="btn btn-danger">Удалить блок</button>
+            <button @click="deleteNode" class="btn btn-danger">Удалить</button>
             <button @click="duplicateNode" class="btn btn-secondary">Дублировать</button>
           </div>
         </div>
@@ -509,7 +507,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
+import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 import { VueFlow, ConnectionMode } from '@vue-flow/core'
 import '@vue-flow/core/dist/style.css'
 import '@vue-flow/core/dist/theme-default.css'
@@ -546,6 +544,7 @@ const availableConditions = ref([
 
 // Vue Flow elements
 const elements = ref([])
+const selectedNode = ref(null)
 const showPreview = ref(false)
 const previewTab = ref('yaml')
 const menuOpen = ref(false)
@@ -566,8 +565,6 @@ let nodeIdCounter = 1
 // Computed properties
 const canUndo = computed(() => historyIndex.value > 0)
 const canRedo = computed(() => historyIndex.value < history.value.length - 1)
-
-const selectedNode = computed(() => elements.value.find(el => el.selected && el.type === 'custom') || null)
 
 const yamlPreview = computed(() => {
   const data = convertFlowToYaml(elements.value)
@@ -687,17 +684,13 @@ const getDefaultDataForType = (type) => {
   }
 }
 
-function onNodeClick(event, node) {
-  // Снимаем выделение со всех
-  elements.value.forEach(el => { if (el.type === 'custom') el.selected = false })
-  // Выделяем только кликнутый
-  const found = elements.value.find(el => el.id === node.id)
-  if (found) found.selected = true
+// Node interaction handlers
+const onNodeClick = (event, node) => {
+  selectedNode.value = node
 }
 
 const onPaneClick = () => {
-  // Снимаем выделение со всех
-  elements.value.forEach(el => { if (el.type === 'custom') el.selected = false })
+  selectedNode.value = null
 }
 
 const onConnectStart = (event, params) => {
@@ -735,8 +728,7 @@ const onConnect = (params) => {
 
 // Sidebar handlers
 const closeSidebar = () => {
-  // Снимаем выделение со всех
-  elements.value.forEach(el => { if (el.type === 'custom') el.selected = false })
+  selectedNode.value = null
 }
 
 const updateNodeData = (nodeId, newData) => {
@@ -746,19 +738,16 @@ const updateNodeData = (nodeId, newData) => {
   }
 }
 
-function handleNodeDelete(nodeId) {
-  if (!nodeId) return
-  // Удаляем node и все связанные edges
-  elements.value = elements.value.filter(el => el.id !== nodeId && (el.source !== nodeId && el.target !== nodeId))
-  // После удаления снимаем выделение
-  elements.value.forEach(el => { if (el.type === 'custom') el.selected = false })
-  saveToHistory()
-}
-
-function handleNodeSelect(nodeId) {
-  elements.value.forEach(el => { if (el.type === 'custom') el.selected = false })
-  const found = elements.value.find(el => el.id === nodeId)
-  if (found) found.selected = true
+const deleteNode = () => {
+  if (selectedNode.value) {
+    // Remove the node and all connected edges
+    elements.value = elements.value.filter(el => 
+      el.id !== selectedNode.value.id && 
+      (el.source !== selectedNode.value.id && el.target !== selectedNode.value.id)
+    )
+    selectedNode.value = null
+    saveToHistory()
+  }
 }
 
 const duplicateNode = () => {
@@ -1077,16 +1066,17 @@ const downloadPreview = () => {
 // Initialize history
 saveToHistory()
 
-// Глобальный обработчик клавиш для удаления выделенного блока
-onMounted(() => {
-  const keyHandler = (e) => {
-    if ((e.key === 'Delete' || e.key === 'Backspace') && selectedNode.value) {
-      handleNodeDelete(selectedNode.value.id)
-    }
+// Удаление по клавише Delete/Backspace
+function handleKeydown(e) {
+  if ((e.key === 'Delete' || e.key === 'Backspace') && selectedNode.value) {
+    deleteNode()
   }
-  window.addEventListener('keydown', keyHandler)
-  // Очищаем при демонтировании
-  onUnmounted(() => window.removeEventListener('keydown', keyHandler))
+}
+onMounted(() => {
+  window.addEventListener('keydown', handleKeydown)
+})
+onBeforeUnmount(() => {
+  window.removeEventListener('keydown', handleKeydown)
 })
 </script>
 
