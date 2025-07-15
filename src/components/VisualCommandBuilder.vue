@@ -546,7 +546,6 @@ const availableConditions = ref([
 
 // Vue Flow elements
 const elements = ref([])
-const selectedNode = ref(null)
 const showPreview = ref(false)
 const previewTab = ref('yaml')
 const menuOpen = ref(false)
@@ -567,6 +566,8 @@ let nodeIdCounter = 1
 // Computed properties
 const canUndo = computed(() => historyIndex.value > 0)
 const canRedo = computed(() => historyIndex.value < history.value.length - 1)
+
+const selectedNode = computed(() => elements.value.find(el => el.selected && el.type === 'custom') || null)
 
 const yamlPreview = computed(() => {
   const data = convertFlowToYaml(elements.value)
@@ -687,13 +688,16 @@ const getDefaultDataForType = (type) => {
 }
 
 function onNodeClick(event, node) {
+  // Снимаем выделение со всех
+  elements.value.forEach(el => { if (el.type === 'custom') el.selected = false })
+  // Выделяем только кликнутый
   const found = elements.value.find(el => el.id === node.id)
-  if (found) selectedNode.value = found
-  else selectedNode.value = null
+  if (found) found.selected = true
 }
 
 const onPaneClick = () => {
-  selectedNode.value = null
+  // Снимаем выделение со всех
+  elements.value.forEach(el => { if (el.type === 'custom') el.selected = false })
 }
 
 const onConnectStart = (event, params) => {
@@ -731,7 +735,8 @@ const onConnect = (params) => {
 
 // Sidebar handlers
 const closeSidebar = () => {
-  selectedNode.value = null
+  // Снимаем выделение со всех
+  elements.value.forEach(el => { if (el.type === 'custom') el.selected = false })
 }
 
 const updateNodeData = (nodeId, newData) => {
@@ -742,15 +747,16 @@ const updateNodeData = (nodeId, newData) => {
 }
 
 function handleNodeDelete(nodeId) {
-  // Удаляем node и все связанные edges
   elements.value = elements.value.filter(el => el.id !== nodeId && (el.source !== nodeId && el.target !== nodeId))
-  if (selectedNode.value && selectedNode.value.id === nodeId) selectedNode.value = null
+  // После удаления снимаем выделение
+  elements.value.forEach(el => { if (el.type === 'custom') el.selected = false })
   saveToHistory()
 }
 
 function handleNodeSelect(nodeId) {
-  const node = elements.value.find(el => el.id === nodeId)
-  if (node) selectedNode.value = node
+  elements.value.forEach(el => { if (el.type === 'custom') el.selected = false })
+  const found = elements.value.find(el => el.id === nodeId)
+  if (found) found.selected = true
 }
 
 const duplicateNode = () => {
