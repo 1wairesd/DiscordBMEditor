@@ -71,13 +71,13 @@
           :connection-line-style="{ stroke: '#3b82f6', strokeWidth: 2 }"
           :connection-mode="ConnectionMode.Loose"
           class="canvas"
-          @node-click="onNodeClick"
           @connect="onConnect"
           @pane-click="onPaneClick"
           @drop="onDrop"
           @dragover.prevent
           @connect-start="onConnectStart"
           @connect-end="onConnectEnd"
+          v-model:selected-nodes="selectedNodeIds"
         >
           <template #node-custom="props">
             <CustomNode
@@ -549,6 +549,7 @@ const showPreview = ref(false)
 const previewTab = ref('yaml')
 const menuOpen = ref(false)
 const paletteTab = ref('actions')
+const selectedNodeIds = ref([])
 
 // History for undo/redo
 const history = ref([])
