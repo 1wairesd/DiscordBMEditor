@@ -551,7 +551,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import { VueFlow, ConnectionMode } from '@vue-flow/core'
 import '@vue-flow/core/dist/style.css'
 import '@vue-flow/core/dist/theme-default.css'
@@ -778,10 +778,11 @@ const getDefaultDataForType = (type) => {
 }
 
 // Node interaction handlers
-const onNodeClick = (event, node) => {
-  // node.id — id выделенного блока
+const onNodeClick = async (event, node) => {
   if (elements.value.find(el => el.id === node.id)) {
-    // Всегда обновляем, даже если выбран тот же id
+    // Принудительный сброс выделения, затем выставить снова
+    selectedNodeIds.value = []
+    await nextTick()
     selectedNodeIds.value = [node.id]
   }
 }
