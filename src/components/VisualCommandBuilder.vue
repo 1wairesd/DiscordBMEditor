@@ -82,7 +82,7 @@
           <template #node-custom="props">
             <CustomNode
               :data="props.data"
-              :selected="props.selected"
+              :selected="selectedNode && selectedNode.id === props.id"
               @update="updateNodeData"
               @delete="() => handleNodeDelete(props.id)"
               @select="() => handleNodeSelect(props.id)"
