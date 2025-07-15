@@ -16,7 +16,7 @@
       <header class="header">
         <h1>{{ $t('editor.title') }}</h1>
         <div class="header-controls">
-          <div class="lang-dropdown" @click.outside="showLangMenu = false">
+          <div class="lang-dropdown" ref="langDropdownRef">
             <button class="lang-btn" @click="toggleLangMenu">
               <span class="lang-label">🌐</span>
               <span class="lang-short">{{ lang.toUpperCase() }}</span>
@@ -73,7 +73,7 @@
 
 <script setup>
 import wsLogo from './assets/ws-logo.png';
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import axios from 'axios';
 import CommandList from './components/CommandList.vue';
@@ -83,6 +83,7 @@ import ModalSaved from './components/ModalSaved.vue';
 const { locale, t } = useI18n();
 const lang = ref(locale.value);
 const showLangMenu = ref(false);
+const langDropdownRef = ref(null);
 const langList = [
   { code: 'en' },
   { code: 'ru' }
@@ -99,6 +100,17 @@ function selectLang(code) {
 function openDoc() {
   window.open('https://1wairesd.github.io/1wairesdIndustriesWiki/docs/intro', '_blank');
 }
+function handleClickOutside(event) {
+  if (langDropdownRef.value && !langDropdownRef.value.contains(event.target)) {
+    showLangMenu.value = false;
+  }
+}
+onMounted(() => {
+  document.addEventListener('mousedown', handleClickOutside);
+});
+onUnmounted(() => {
+  document.removeEventListener('mousedown', handleClickOutside);
+});
 
 const code = window.location.hash.replace('#', '');
 const loading = ref(false);
