@@ -42,10 +42,22 @@
     
     <!-- Connection handles -->
     <div class="node-handles">
-      <div class="handle handle-top" data-handlepos="top"></div>
-      <div class="handle handle-bottom" data-handlepos="bottom"></div>
-      <div class="handle handle-left" data-handlepos="left"></div>
-      <div class="handle handle-right" data-handlepos="right"></div>
+      <!-- Top handles -->
+      <div class="handle handle-top" data-handlepos="top" style="left: 20%"></div>
+      <div class="handle handle-top" data-handlepos="top" style="left: 50%"></div>
+      <div class="handle handle-top" data-handlepos="top" style="left: 80%"></div>
+      <!-- Bottom handles -->
+      <div class="handle handle-bottom" data-handlepos="bottom" style="left: 20%"></div>
+      <div class="handle handle-bottom" data-handlepos="bottom" style="left: 50%"></div>
+      <div class="handle handle-bottom" data-handlepos="bottom" style="left: 80%"></div>
+      <!-- Left handles -->
+      <div class="handle handle-left" data-handlepos="left" style="top: 25%"></div>
+      <div class="handle handle-left" data-handlepos="left" style="top: 50%"></div>
+      <div class="handle handle-left" data-handlepos="left" style="top: 75%"></div>
+      <!-- Right handles -->
+      <div class="handle handle-right" data-handlepos="right" style="top: 25%"></div>
+      <div class="handle handle-right" data-handlepos="right" style="top: 50%"></div>
+      <div class="handle handle-right" data-handlepos="right" style="top: 75%"></div>
     </div>
   </div>
 </template>
