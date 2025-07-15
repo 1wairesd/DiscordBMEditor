@@ -48,10 +48,6 @@
       <Handle type="target" :position="Position.Top" id="in-top" :style="{ left: '50%' }" />
       <!-- Bottom handle -->
       <Handle type="source" :position="Position.Bottom" id="out-bottom" :style="{ left: '50%' }" />
-      <!-- Left handle -->
-      <Handle type="target" :position="Position.Left" id="in-left" :style="{ top: '50%' }" />
-      <!-- Right handle -->
-      <Handle type="source" :position="Position.Right" id="out-right" :style="{ top: '50%' }" />
     </div>
   </div>
 </template>
