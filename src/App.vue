@@ -762,6 +762,7 @@ body {
     justify-content: center;
   }
   
+  
   .command-header {
     flex-direction: column;
     gap: 1rem;
