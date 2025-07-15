@@ -1,5 +1,5 @@
 <template>
-  <div class="custom-node" :class="{ selected }">
+  <div class="custom-node" :class="{ selected }" @mousedown="onMouseDown">
     <div class="node-header" :class="`type-${data.type}`">
       <div class="node-icon">{{ getIcon() }}</div>
       <div class="node-title">{{ data.name || getDefaultName() }}</div>
@@ -66,6 +66,9 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['delete', 'select'])
+function onMouseDown(e) {
+  if (e.button === 0) emit('select') // только ЛКМ
+}
 function deleteNode() {
   emit('delete')
 }
