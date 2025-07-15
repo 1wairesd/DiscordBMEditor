@@ -19,6 +19,7 @@
       </div>
     </div>
 
+
     <div class="main-content">
       <!-- Palette -->
       <div class="palette">
