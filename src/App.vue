@@ -3,8 +3,8 @@
     <header class="app-header">
       <div class="header-content">
         <h1>DiscordBM Editor</h1>
-        <div class="header-actions">
-          <button @click="openSaveModal" class="btn btn-success btn-lg">Сохранить</button>
+        <div class="header-actions modern-save">
+          <button @click="openSaveModal" class="btn modern-save-btn">Сохранить</button>
         </div>
       </div>
     </header>
@@ -97,7 +97,7 @@ export default {
         this.bytebinUrl = `https://bytebin.lucko.me/${result.key}`
         this.lastSaved = new Date().toLocaleString()
         
-        alert(`Данные сохранены! Код: ${result.key}`)
+        // alert удалён
         console.log('Bytebin URL:', this.bytebinUrl)
       } catch (error) {
         console.error('Error saving to Bytebin:', error)
@@ -142,6 +142,32 @@ body {
   align-items: center;
   max-width: 1400px;
   margin: 0 auto;
+}
+
+.modern-save {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  flex: 1;
+}
+
+.btn.modern-save-btn {
+  background: linear-gradient(90deg, #3b82f6 0%, #10b981 100%);
+  color: #fff;
+  font-size: 1.15rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 10px;
+  box-shadow: 0 2px 12px rgba(59,130,246,0.10);
+  padding: 0.7rem 2.2rem;
+  transition: background 0.18s, box-shadow 0.18s, transform 0.12s;
+  cursor: pointer;
+  outline: none;
+}
+.btn.modern-save-btn:hover, .btn.modern-save-btn:focus {
+  background: linear-gradient(90deg, #2563eb 0%, #059669 100%);
+  box-shadow: 0 4px 18px rgba(59,130,246,0.18);
+  transform: translateY(-2px) scale(1.03);
 }
 
 .app-header h1 {
