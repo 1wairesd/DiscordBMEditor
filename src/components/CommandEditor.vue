@@ -1,7 +1,13 @@
 <template>
-  <div class="command-editor">
-    <h3>{{ isNew ? 'Создать команду' : 'Редактировать команду' }}</h3>
-    <div class="visual-editor"
+  <div class="workflow-editor">
+    <div class="workflow-header">
+      <input v-model="localCommand.name" class="command-title" placeholder="Command name..." />
+      <input v-model="localCommand.description" class="command-desc" placeholder="Description..." />
+      <button class="reset-btn" @click="resetWorkflow">Reset Command</button>
+      <button class="save-btn" @click="$emit('save', localCommand)">Save</button>
+      <button class="cancel-btn" @click="$emit('cancel')">Cancel</button>
+    </div>
+    <div class="workflow-canvas"
          @dragover.prevent
          @drop="onDropBlock">
       <ReactFlow
@@ -9,20 +15,19 @@
         :edges="edgesWithSelection"
         :onNodeClick="onNodeClick"
         :onEdgeClick="onEdgeClick"
-        style="width:100%;height:400px;background:#23272b" />
-    </div>
-    <div class="actions">
-      <button @click="$emit('save', localCommand)">Сохранить</button>
-      <button @click="$emit('cancel')">Отмена</button>
+        :nodeTypes="customNodeTypes"
+        style="width:100%;height:600px;background:#23272b" />
     </div>
   </div>
 </template>
 
 <script setup>
-import { reactive, watch, ref, onMounted, onUnmounted, computed } from 'vue';
+import { reactive, watch, ref, onMounted, onUnmounted, computed, shallowRef } from 'vue';
 import ActionEditor from './ActionEditor.vue';
 import ReactFlow from 'reactflow';
 import 'reactflow/dist/style.css';
+import { Handle, Position } from 'reactflow';
+
 const props = defineProps({
   command: Object,
   isNew: Boolean
@@ -106,8 +111,45 @@ function onDropBlock(event) {
 const selectedNodeId = ref(null);
 const connectSourceId = ref(null);
 const selectedEdgeId = ref(null);
+const customNodeTypes = {
+  option: shallowRef({
+    render() {
+      return h('div', { class: 'node option-node' }, [
+        h('span', { class: 'node-icon' }, '🔤'),
+        h('span', { class: 'node-label' }, this.data.label),
+        h(Handle, { type: 'source', position: Position.Right }),
+        h(Handle, { type: 'target', position: Position.Left })
+      ]);
+    }
+  }),
+  action: shallowRef({
+    render() {
+      return h('div', { class: 'node action-node' }, [
+        h('span', { class: 'node-icon' }, '⚡'),
+        h('span', { class: 'node-label' }, this.data.label),
+        h(Handle, { type: 'source', position: Position.Right }),
+        h(Handle, { type: 'target', position: Position.Left })
+      ]);
+    }
+  }),
+  condition: shallowRef({
+    render() {
+      return h('div', { class: 'node condition-node' }, [
+        h('span', { class: 'node-icon' }, '❓'),
+        h('span', { class: 'node-label' }, this.data.label),
+        h(Handle, { type: 'source', position: Position.Right }),
+        h(Handle, { type: 'target', position: Position.Left })
+      ]);
+    }
+  })
+};
+function resetWorkflow() {
+  nodes.value = [];
+  edges.value = [];
+}
 const nodesWithSelection = computed(() => nodes.value.map(n => ({
   ...n,
+  type: n.id.startsWith('opt') ? 'option' : n.id.startsWith('act') ? 'action' : n.id.startsWith('cond') ? 'condition' : undefined,
   style: n.id === connectSourceId.value ? { border: '2px solid #4dd0ff' } : undefined
 })));
 const edgesWithSelection = computed(() => edges.value.map(e => ({
@@ -155,55 +197,91 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-.command-editor {
+.workflow-editor {
   background: #23272b;
   border-radius: 10px;
-  padding: 20px;
+  padding: 18px 18px 0 18px;
   margin-bottom: 24px;
-  max-width: 600px;
+  min-height: 700px;
 }
-form label {
-  display: block;
-  margin-bottom: 10px;
-  color: #fff;
+.workflow-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 12px;
 }
-input, select {
-  margin-left: 10px;
-  margin-bottom: 4px;
-  padding: 4px 8px;
-  border-radius: 4px;
-  border: none;
+.command-title {
+  font-size: 1.3em;
+  font-weight: 700;
   background: #181c20;
   color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 14px;
+  min-width: 200px;
 }
-.section {
-  margin: 16px 0;
+.command-desc {
+  font-size: 1em;
+  background: #181c20;
+  color: #b9bbbe;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 14px;
+  min-width: 300px;
 }
-.actions {
-  margin-top: 16px;
-  display: flex;
-  gap: 12px;
+.reset-btn {
+  background: #b71c1c;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 18px;
+  font-size: 1em;
+  font-weight: 600;
+  margin-left: auto;
+  cursor: pointer;
 }
-button {
+.save-btn {
   background: #5865f2;
   color: #fff;
   border: none;
   border-radius: 6px;
-  padding: 6px 14px;
-  font-size: 1rem;
+  padding: 8px 18px;
+  font-size: 1em;
+  font-weight: 600;
   cursor: pointer;
 }
-button[type="button"] {
+.cancel-btn {
   background: #444;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 18px;
+  font-size: 1em;
+  font-weight: 600;
+  cursor: pointer;
 }
-button:hover {
-  background: #4752c4;
-}
-.visual-editor {
-  margin-bottom: 24px;
-  background: #23272b;
+.workflow-canvas {
+  background: repeating-linear-gradient(0deg, #23272b, #23272b 24px, #262a30 24px, #262a30 48px), repeating-linear-gradient(90deg, #23272b, #23272b 24px, #262a30 24px, #262a30 48px);
   border-radius: 10px;
-  padding: 10px;
-  min-height: 420px;
+  min-height: 600px;
+  padding: 0;
+  margin-bottom: 0;
 }
+.node {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 18px;
+  border-radius: 8px;
+  font-size: 1.08em;
+  font-weight: 600;
+  box-shadow: 0 2px 8px #0002;
+  background: #23272b;
+  border: 2px solid #444;
+}
+.option-node { background: #2e3a59; color: #fff; border-color: #4dd0ff; }
+.action-node { background: #2e593a; color: #fff; border-color: #4dff7f; }
+.condition-node { background: #594a2e; color: #fff; border-color: #ffd700; }
+.node-icon { font-size: 1.3em; margin-right: 6px; }
+.node-label { font-size: 1.08em; }
 </style> 

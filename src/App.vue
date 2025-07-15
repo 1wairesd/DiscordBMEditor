@@ -47,18 +47,13 @@
         <p style="color: red">{{ $t('editor.error') }}: {{ error }}</p>
       </div>
       <div v-else>
-        <div v-if="editingIndex !== null">
+        <div v-if="selectedIndex !== null">
           <CommandEditor
-            :command="commands[editingIndex]"
+            :command="commands[selectedIndex]"
             :isNew="isNewCommand"
             @save="saveCommand"
             @cancel="cancelEdit"
           />
-        </div>
-        <div v-else-if="selectedIndex !== null">
-          <div class="empty-editor">
-            <p>{{ $t('editor.selectToEdit') }}</p>
-          </div>
         </div>
         <div v-else>
           <div class="empty-editor">
@@ -66,8 +61,8 @@
           </div>
         </div>
       </div>
+      <ModalSaved :visible="showModal" :code="savedCode" @close="showModal = false" />
     </main>
-    <ModalSaved :visible="showModal" :code="savedCode" @close="showModal = false" />
   </div>
 </template>
 
