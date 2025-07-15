@@ -45,12 +45,9 @@
             <p>Выберите или создайте команду</p>
           </div>
         </div>
-        <div v-if="saveResult" class="save-result">
-          <p>Скопируйте команду для применения изменений:</p>
-          <code>/discordbmv applyedits {{ saveResult }}</code>
-        </div>
       </div>
     </main>
+    <ModalSaved :visible="showModal" :code="savedCode" @close="showModal = false" />
   </div>
 </template>
 
@@ -59,6 +56,7 @@ import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import CommandList from './components/CommandList.vue';
 import CommandEditor from './components/CommandEditor.vue';
+import ModalSaved from './components/ModalSaved.vue';
 
 const code = window.location.hash.replace('#', '');
 const loading = ref(false);
@@ -69,6 +67,8 @@ const saveResult = ref('');
 const selectedIndex = ref(null);
 const editingIndex = ref(null);
 const isNewCommand = ref(false);
+const showModal = ref(false);
+const savedCode = ref('');
 
 onMounted(async () => {
   if (!code) return;
@@ -134,7 +134,9 @@ async function saveEdits() {
     const resp = await axios.post('https://bytebin.lucko.me/post', rawData.value, {
       headers: { 'Content-Type': 'application/json' }
     });
-    saveResult.value = resp.data.key;
+    savedCode.value = resp.data.key;
+    showModal.value = true;
+    saveResult.value = '';
   } catch (e) {
     error.value = e.message || 'Ошибка сохранения';
   } finally {
