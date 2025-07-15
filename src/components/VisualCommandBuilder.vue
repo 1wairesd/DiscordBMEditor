@@ -747,6 +747,8 @@ const updateNodeData = (nodeId, newData) => {
 }
 
 function handleNodeDelete(nodeId) {
+  if (!nodeId) return
+  // Удаляем node и все связанные edges
   elements.value = elements.value.filter(el => el.id !== nodeId && (el.source !== nodeId && el.target !== nodeId))
   // После удаления снимаем выделение
   elements.value.forEach(el => { if (el.type === 'custom') el.selected = false })
