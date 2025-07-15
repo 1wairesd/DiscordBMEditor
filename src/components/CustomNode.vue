@@ -43,27 +43,20 @@
     <!-- Connection handles -->
     <div class="node-handles">
       <!-- Top handles -->
-      <div class="handle handle-top" data-handlepos="top" style="left: 20%"></div>
-      <div class="handle handle-top" data-handlepos="top" style="left: 50%"></div>
-      <div class="handle handle-top" data-handlepos="top" style="left: 80%"></div>
+      <Handle type="target" :position="Position.Top" id="in-top" :style="{ left: '50%' }" />
       <!-- Bottom handles -->
-      <div class="handle handle-bottom" data-handlepos="bottom" style="left: 20%"></div>
-      <div class="handle handle-bottom" data-handlepos="bottom" style="left: 50%"></div>
-      <div class="handle handle-bottom" data-handlepos="bottom" style="left: 80%"></div>
+      <Handle type="source" :position="Position.Bottom" id="out-bottom" :style="{ left: '50%' }" />
       <!-- Left handles -->
-      <div class="handle handle-left" data-handlepos="left" style="top: 25%"></div>
-      <div class="handle handle-left" data-handlepos="left" style="top: 50%"></div>
-      <div class="handle handle-left" data-handlepos="left" style="top: 75%"></div>
+      <Handle type="target" :position="Position.Left" id="in-left" :style="{ top: '50%' }" />
       <!-- Right handles -->
-      <div class="handle handle-right" data-handlepos="right" style="top: 25%"></div>
-      <div class="handle handle-right" data-handlepos="right" style="top: 50%"></div>
-      <div class="handle handle-right" data-handlepos="right" style="top: 75%"></div>
+      <Handle type="source" :position="Position.Right" id="out-right" :style="{ top: '50%' }" />
     </div>
   </div>
 </template>
 
 <script setup>
 import { computed } from 'vue'
+import { Handle, Position } from '@vue-flow/core'
 
 const props = defineProps({
   data: {
