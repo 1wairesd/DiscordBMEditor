@@ -48,14 +48,14 @@
       <Handle type="source" :position="Position.Bottom" id="out-bottom" :style="{ left: '50%' }" />
     </div>
     <!-- Контекстное меню -->
-    <div v-if="showMenu" class="node-context-menu" :style="menuStyle">
+    <div v-if="isMenuOpen" class="node-context-menu" :style="menuStyle">
       <button @click="deleteNode">Удалить блок</button>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { computed } from 'vue'
 import { Handle, Position } from '@vue-flow/core'
 
 const props = defineProps({
@@ -66,25 +66,18 @@ const props = defineProps({
   selected: {
     type: Boolean,
     default: false
-  }
+  },
+  isMenuOpen: { type: Boolean, default: false },
+  menuStyle: { type: Object, default: () => ({}) }
 })
 
-const emit = defineEmits(['delete', 'select'])
-const showMenu = ref(false)
-const menuStyle = ref({})
+const emit = defineEmits(['delete', 'select', 'contextmenu'])
 function onContextMenu(e) {
-  emit('select') 
-  showMenu.value = true
-  menuStyle.value = { left: e.offsetX + 'px', top: e.offsetY + 'px' }
-  document.addEventListener('click', closeMenu)
-}
-function closeMenu() {
-  showMenu.value = false
-  document.removeEventListener('click', closeMenu)
+  emit('select')
+  emit('contextmenu', { id: props.data.id, x: e.clientX, y: e.clientY })
 }
 function deleteNode() {
   emit('delete')
-  closeMenu()
 }
 
 const getIcon = () => {
