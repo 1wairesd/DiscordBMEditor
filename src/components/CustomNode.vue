@@ -1,5 +1,5 @@
 <template>
-  <div class="custom-node" :class="{ selected }" @contextmenu.prevent="onContextMenu">
+  <div class="custom-node" :class="{ selected }">
     <div class="node-header" :class="`type-${data.type}`">
       <div class="node-icon">{{ getIcon() }}</div>
       <div class="node-title">{{ data.name || getDefaultName() }}</div>
@@ -47,10 +47,6 @@
       <!-- Bottom handles -->
       <Handle type="source" :position="Position.Bottom" id="out-bottom" :style="{ left: '50%' }" />
     </div>
-    <!-- Контекстное меню -->
-    <div v-if="isMenuOpen" class="node-context-menu" :style="menuStyle">
-      <button @click="deleteNode">Удалить блок</button>
-    </div>
   </div>
 </template>
 
@@ -66,16 +62,10 @@ const props = defineProps({
   selected: {
     type: Boolean,
     default: false
-  },
-  isMenuOpen: { type: Boolean, default: false },
-  menuStyle: { type: Object, default: () => ({}) }
+  }
 })
 
-const emit = defineEmits(['delete', 'select', 'contextmenu'])
-function onContextMenu(e) {
-  emit('select')
-  emit('contextmenu', { id: props.data.id, x: e.clientX, y: e.clientY })
-}
+const emit = defineEmits(['delete', 'select'])
 function deleteNode() {
   emit('delete')
 }
@@ -285,34 +275,6 @@ const getConditionTypeLabel = () => {
   right: -6px;
   top: 50%;
   transform: translateY(-50%);
-}
-
-.node-context-menu {
-  position: absolute;
-  z-index: 1000;
-  background: #23272b;
-  border: 1px solid #404040;
-  border-radius: 8px;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.25);
-  min-width: 120px;
-  padding: 6px 0;
-  top: 0;
-  left: 0;
-}
-.node-context-menu button {
-  width: 100%;
-  background: none;
-  border: none;
-  color: #ef4444;
-  padding: 8px 16px;
-  text-align: left;
-  font-size: 1em;
-  cursor: pointer;
-  border-radius: 0;
-}
-.node-context-menu button:hover {
-  background: #ef4444;
-  color: #fff;
 }
 
 /* Responsive adjustments */

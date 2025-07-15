@@ -86,9 +86,6 @@
               @update="updateNodeData"
               @delete="() => handleNodeDelete(props.id)"
               @select="() => handleNodeSelect(props.id)"
-              @contextmenu="(e) => handleNodeContextMenu(props.id, e)"
-              :isMenuOpen="menuNodeId === props.id"
-              :menuStyle="menuNodeId === props.id ? menuStyle : {}"
             />
           </template>
         </VueFlow>
@@ -468,6 +465,7 @@
 
           <!-- Common Actions -->
           <div class="form-actions">
+            <button @click="handleNodeDelete(selectedNode.value.id)" class="btn btn-danger">Удалить блок</button>
             <button @click="duplicateNode" class="btn btn-secondary">Дублировать</button>
           </div>
         </div>
@@ -1081,19 +1079,6 @@ onMounted(() => {
   // Очищаем при демонтировании
   onUnmounted(() => window.removeEventListener('keydown', keyHandler))
 })
-
-const menuNodeId = ref(null)
-const menuStyle = ref({})
-function handleNodeContextMenu(nodeId, e) {
-  menuNodeId.value = nodeId
-  menuStyle.value = { position: 'fixed', left: e.x + 'px', top: e.y + 'px', zIndex: 1000 }
-  document.addEventListener('click', closeNodeMenu)
-}
-function closeNodeMenu() {
-  menuNodeId.value = null
-  menuStyle.value = {}
-  document.removeEventListener('click', closeNodeMenu)
-}
 </script>
 
 <style scoped>
