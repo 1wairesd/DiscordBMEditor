@@ -92,7 +92,7 @@
       </div>
 
       <!-- Properties Sidebar -->
-      <div v-if="selectedBlock && hasRootNode" class="properties-sidebar" :key="selectedBlock?.id">
+      <div v-if="selectedNode && hasRootNode" class="properties-sidebar" :key="selectedNode?.id">
         <div class="sidebar-header">
           <h3>Свойства блока</h3>
           <button @click="closeSidebar" class="btn-close">×</button>
@@ -100,37 +100,37 @@
         
         <div class="sidebar-content">
           <!-- Root Block Settings -->
-          <div v-if="selectedBlock && selectedBlock.id === ROOT_NODE_ID" class="form-section">
+          <div v-if="selectedNode && selectedNode.id === ROOT_NODE_ID" class="form-section">
             <h4>Настройки команды</h4>
             <div class="form-group">
               <label>Имя команды:</label>
-              <input v-model="selectedBlock.data.name" type="text" placeholder="hello" class="form-input" @input="saveToHistory" />
+              <input v-model="selectedNode.data.name" type="text" placeholder="hello" class="form-input" @input="saveToHistory" />
             </div>
             <div class="form-group">
               <label>Описание:</label>
-              <input v-model="selectedBlock.data.description" type="text" placeholder="Says hello to the user" class="form-input" @input="saveToHistory" />
+              <input v-model="selectedNode.data.description" type="text" placeholder="Says hello to the user" class="form-input" @input="saveToHistory" />
             </div>
             <div class="form-group">
               <label>Контекст:</label>
-              <select v-model="selectedBlock.data.context" class="form-select" @change="saveToHistory">
+              <select v-model="selectedNode.data.context" class="form-select" @change="saveToHistory">
                 <option value="server">server</option>
                 <option value="dm">dm</option>
                 <option value="both">both</option>
               </select>
             </div>
             <div class="form-group">
-              <label><input type="checkbox" v-model="selectedBlock.data.ephemeral" class="form-checkbox" @change="saveToHistory" /> ephemeral</label>
+              <label><input type="checkbox" v-model="selectedNode.data.ephemeral" class="form-checkbox" @change="saveToHistory" /> ephemeral</label>
             </div>
           </div>
 
           <!-- Options Form -->
-          <div v-if="selectedBlock.data.type === 'option'" class="form-section">
+          <div v-if="selectedNode.data.type === 'option'" class="form-section">
             <h4>Настройки опции</h4>
             
             <div class="form-group">
               <label>Название опции:</label>
               <input 
-                v-model="selectedBlock.data.name" 
+                v-model="selectedNode.data.name" 
                 type="text" 
                 placeholder="Введите название опции"
                 class="form-input"
@@ -141,7 +141,7 @@
             <div class="form-group">
               <label>Описание:</label>
               <textarea 
-                v-model="selectedBlock.data.description" 
+                v-model="selectedNode.data.description" 
                 placeholder="Введите описание опции"
                 class="form-textarea"
                 rows="3"
@@ -151,7 +151,7 @@
 
             <div class="form-group">
               <label>Тип опции:</label>
-              <select v-model="selectedBlock.data.optionType" class="form-select" @change="saveToHistory">
+              <select v-model="selectedNode.data.optionType" class="form-select" @change="saveToHistory">
                 <option value="STRING">Строка (STRING)</option>
                 <option value="USER">Пользователь (USER)</option>
                 <option value="CHANNEL">Канал (CHANNEL)</option>
@@ -161,7 +161,7 @@
             <div class="form-group">
               <label>
                 <input 
-                  v-model="selectedBlock.data.required" 
+                  v-model="selectedNode.data.required" 
                   type="checkbox" 
                   class="form-checkbox"
                   @change="saveToHistory"
@@ -172,13 +172,13 @@
           </div>
 
           <!-- Actions Form -->
-          <div v-if="selectedBlock.data.type === 'action'" class="form-section">
+          <div v-if="selectedNode.data.type === 'action'" class="form-section">
             <h4>Настройки действия</h4>
             
             <div class="form-group">
               <label>Название действия:</label>
               <input 
-                v-model="selectedBlock.data.name" 
+                v-model="selectedNode.data.name" 
                 type="text" 
                 placeholder="Введите название действия"
                 class="form-input"
@@ -188,7 +188,7 @@
 
             <div class="form-group">
               <label>Тип действия:</label>
-              <select v-model="selectedBlock.data.actionType" class="form-select" @change="saveToHistory">
+              <select v-model="selectedNode.data.actionType" class="form-select" @change="saveToHistory">
                 <option value="send_message">Отправить сообщение</option>
                 <option value="send_to_channel">Отправить в канал</option>
                 <option value="delete_message">Удалить сообщение</option>
@@ -201,23 +201,23 @@
               </select>
             </div>
 
-            <div v-if="selectedBlock.data.actionType === 'send_message'" class="form-group">
+            <div v-if="selectedNode.data.actionType === 'send_message'" class="form-group">
               <label>Сообщение:</label>
               <textarea 
-                v-model="selectedBlock.data.message" 
+                v-model="selectedNode.data.message" 
                 placeholder="Введите сообщение"
                 class="form-textarea"
                 rows="3"
                 @input="saveToHistory"
               ></textarea>
               <label>Тип ответа:</label>
-              <select v-model="selectedBlock.data.response_type" class="form-select" @change="saveToHistory">
+              <select v-model="selectedNode.data.response_type" class="form-select" @change="saveToHistory">
                 <option value="REPLY">Ответ (REPLY)</option>
                 <option value="edit_message">Редактировать сообщение</option>
               </select>
               <label>Метка:</label>
               <input 
-                v-model="selectedBlock.data.label" 
+                v-model="selectedNode.data.label" 
                 type="text" 
                 placeholder="Метка для ссылки"
                 class="form-input"
@@ -225,10 +225,10 @@
               />
             </div>
 
-            <div v-if="selectedBlock.data.actionType === 'send_to_channel'" class="form-group">
+            <div v-if="selectedNode.data.actionType === 'send_to_channel'" class="form-group">
               <label>Сообщение:</label>
               <textarea 
-                v-model="selectedBlock.data.message" 
+                v-model="selectedNode.data.message" 
                 placeholder="Введите сообщение"
                 class="form-textarea"
                 rows="3"
@@ -236,7 +236,7 @@
               ></textarea>
               <label>Метка:</label>
               <input 
-                v-model="selectedBlock.data.label" 
+                v-model="selectedNode.data.label" 
                 type="text" 
                 placeholder="Метка для ссылки"
                 class="form-input"
@@ -244,10 +244,10 @@
               />
             </div>
 
-            <div v-if="selectedBlock.data.actionType === 'delete_message'" class="form-group">
+            <div v-if="selectedNode.data.actionType === 'delete_message'" class="form-group">
               <label>Метка:</label>
               <input 
-                v-model="selectedBlock.data.label" 
+                v-model="selectedNode.data.label" 
                 type="text" 
                 placeholder="Метка сообщения для удаления"
                 class="form-input"
@@ -255,7 +255,7 @@
               />
               <label>
                 <input 
-                  v-model="selectedBlock.data.delete_all" 
+                  v-model="selectedNode.data.delete_all" 
                   type="checkbox" 
                   class="form-checkbox"
                   @change="saveToHistory"
@@ -264,7 +264,7 @@
               </label>
               <label>Сообщение об удалении:</label>
               <input 
-                v-model="selectedBlock.data.response_message" 
+                v-model="selectedNode.data.response_message" 
                 type="text" 
                 placeholder="Сообщение после удаления"
                 class="form-input"
@@ -272,17 +272,17 @@
               />
             </div>
 
-            <div v-if="selectedBlock.data.actionType === 'button'" class="form-group">
+            <div v-if="selectedNode.data.actionType === 'button'" class="form-group">
               <label>Текст кнопки:</label>
               <input 
-                v-model="selectedBlock.data.button_label" 
+                v-model="selectedNode.data.button_label" 
                 type="text" 
                 placeholder="Текст кнопки"
                 class="form-input"
                 @input="saveToHistory"
               />
               <label>Стиль кнопки:</label>
-              <select v-model="selectedBlock.data.button_style" class="form-select" @change="saveToHistory">
+              <select v-model="selectedNode.data.button_style" class="form-select" @change="saveToHistory">
                 <option value="PRIMARY">Основная (PRIMARY)</option>
                 <option value="SECONDARY">Вторичная (SECONDARY)</option>
                 <option value="SUCCESS">Успех (SUCCESS)</option>
@@ -291,7 +291,7 @@
               </select>
               <label>URL (для LINK):</label>
               <input 
-                v-model="selectedBlock.data.button_url" 
+                v-model="selectedNode.data.button_url" 
                 type="text" 
                 placeholder="https://example.com"
                 class="form-input"
@@ -299,7 +299,7 @@
               />
               <label>Эмодзи:</label>
               <input 
-                v-model="selectedBlock.data.button_emoji" 
+                v-model="selectedNode.data.button_emoji" 
                 type="text" 
                 placeholder="🔗"
                 class="form-input"
@@ -307,7 +307,7 @@
               />
               <label>ID кнопки:</label>
               <input 
-                v-model="selectedBlock.data.button_id" 
+                v-model="selectedNode.data.button_id" 
                 type="text" 
                 placeholder="btn_click"
                 class="form-input"
@@ -315,7 +315,7 @@
               />
               <label>Сообщение кнопки:</label>
               <input 
-                v-model="selectedBlock.data.button_message" 
+                v-model="selectedNode.data.button_message" 
                 type="text" 
                 placeholder="Сообщение при нажатии"
                 class="form-input"
@@ -323,7 +323,7 @@
               />
               <label>
                 <input 
-                  v-model="selectedBlock.data.button_disabled" 
+                  v-model="selectedNode.data.button_disabled" 
                   type="checkbox" 
                   class="form-checkbox"
                   @change="saveToHistory"
@@ -332,10 +332,10 @@
               </label>
             </div>
 
-            <div v-if="selectedBlock.data.actionType === 'edit_component'" class="form-group">
+            <div v-if="selectedNode.data.actionType === 'edit_component'" class="form-group">
               <label>Целевое сообщение:</label>
               <input 
-                v-model="selectedBlock.data.target_message" 
+                v-model="selectedNode.data.target_message" 
                 type="text" 
                 placeholder="Метка сообщения"
                 class="form-input"
@@ -343,7 +343,7 @@
               />
               <label>ID компонента:</label>
               <input 
-                v-model="selectedBlock.data.component_id" 
+                v-model="selectedNode.data.component_id" 
                 type="text" 
                 placeholder="btn_click"
                 class="form-input"
@@ -351,14 +351,14 @@
               />
               <label>Новый текст:</label>
               <input 
-                v-model="selectedBlock.data.button_label" 
+                v-model="selectedNode.data.button_label" 
                 type="text" 
                 placeholder="Новый текст кнопки"
                 class="form-input"
                 @input="saveToHistory"
               />
               <label>Новый стиль:</label>
-              <select v-model="selectedBlock.data.button_style" class="form-select" @change="saveToHistory">
+              <select v-model="selectedNode.data.button_style" class="form-select" @change="saveToHistory">
                 <option value="PRIMARY">Основная (PRIMARY)</option>
                 <option value="SECONDARY">Вторичная (SECONDARY)</option>
                 <option value="SUCCESS">Успех (SUCCESS)</option>
@@ -366,7 +366,7 @@
               </select>
               <label>
                 <input 
-                  v-model="selectedBlock.data.button_disabled" 
+                  v-model="selectedNode.data.button_disabled" 
                   type="checkbox" 
                   class="form-checkbox"
                   @change="saveToHistory"
@@ -375,10 +375,10 @@
               </label>
             </div>
 
-            <div v-if="selectedBlock.data.actionType === 'send_form'" class="form-group">
+            <div v-if="selectedNode.data.actionType === 'send_form'" class="form-group">
               <label>Название формы:</label>
               <input 
-                v-model="selectedBlock.data.form_name" 
+                v-model="selectedNode.data.form_name" 
                 type="text" 
                 placeholder="feedback-form"
                 class="form-input"
@@ -386,10 +386,10 @@
               />
             </div>
 
-            <div v-if="selectedBlock.data.actionType === 'add_role'" class="form-group">
+            <div v-if="selectedNode.data.actionType === 'add_role'" class="form-group">
               <label>ID роли:</label>
               <input 
-                v-model="selectedBlock.data.role_id" 
+                v-model="selectedNode.data.role_id" 
                 type="text" 
                 placeholder="1234567890123456789"
                 class="form-input"
@@ -397,10 +397,10 @@
               />
             </div>
 
-            <div v-if="selectedBlock.data.actionType === 'resolve_placeholders'" class="form-group">
+            <div v-if="selectedNode.data.actionType === 'resolve_placeholders'" class="form-group">
               <label>Шаблон:</label>
               <textarea 
-                v-model="selectedBlock.data.template" 
+                v-model="selectedNode.data.template" 
                 placeholder="%player_name% has %player_health% health"
                 class="form-textarea"
                 rows="3"
@@ -408,7 +408,7 @@
               ></textarea>
               <label>Игрок:</label>
               <input 
-                v-model="selectedBlock.data.player" 
+                v-model="selectedNode.data.player" 
                 type="text" 
                 placeholder="{player}"
                 class="form-input"
@@ -416,10 +416,10 @@
               />
             </div>
 
-            <div v-if="selectedBlock.data.actionType === 'send_page'" class="form-group">
+            <div v-if="selectedNode.data.actionType === 'send_page'" class="form-group">
               <label>ID страницы:</label>
               <input 
-                v-model="selectedBlock.data.page_id" 
+                v-model="selectedNode.data.page_id" 
                 type="text" 
                 placeholder="1-embed"
                 class="form-input"
@@ -430,7 +430,7 @@
             <div class="form-group">
               <label>Задержка (сек):</label>
               <input 
-                v-model="selectedBlock.data.delay" 
+                v-model="selectedNode.data.delay" 
                 type="number" 
                 placeholder="0"
                 class="form-input"
@@ -440,13 +440,13 @@
           </div>
 
           <!-- Conditions Form -->
-          <div v-if="selectedBlock.data.type === 'condition'" class="form-section">
+          <div v-if="selectedNode.data.type === 'condition'" class="form-section">
             <h4>Настройки условия</h4>
             
             <div class="form-group">
               <label>Название условия:</label>
               <input 
-                v-model="selectedBlock.data.name" 
+                v-model="selectedNode.data.name" 
                 type="text" 
                 placeholder="Введите название условия"
                 class="form-input"
@@ -456,16 +456,16 @@
 
             <div class="form-group">
               <label>Тип условия:</label>
-              <select v-model="selectedBlock.data.conditionType" class="form-select" @change="saveToHistory">
+              <select v-model="selectedNode.data.conditionType" class="form-select" @change="saveToHistory">
                 <option value="permission">Права (permission)</option>
                 <option value="chance">Шанс (chance)</option>
               </select>
             </div>
 
-            <div v-if="selectedBlock.data.conditionType === 'permission'" class="form-group">
+            <div v-if="selectedNode.data.conditionType === 'permission'" class="form-group">
               <label>ID роли:</label>
               <input 
-                v-model="selectedBlock.data.role_id" 
+                v-model="selectedNode.data.role_id" 
                 type="text" 
                 placeholder="1234567890123456789"
                 class="form-input"
@@ -473,10 +473,10 @@
               />
             </div>
 
-            <div v-if="selectedBlock.data.conditionType === 'chance'" class="form-group">
+            <div v-if="selectedNode.data.conditionType === 'chance'" class="form-group">
               <label>Процент шанса:</label>
               <input 
-                v-model="selectedBlock.data.percent" 
+                v-model="selectedNode.data.percent" 
                 type="number" 
                 min="1"
                 max="100"
@@ -551,7 +551,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick, provide } from 'vue'
+import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 import { VueFlow, ConnectionMode } from '@vue-flow/core'
 import '@vue-flow/core/dist/style.css'
 import '@vue-flow/core/dist/theme-default.css'
@@ -608,18 +608,14 @@ const previewTab = ref('yaml')
 const menuOpen = ref(false)
 const paletteTab = ref('actions')
 const hasRootNode = computed(() => elements.value.some(el => el.id === ROOT_NODE_ID))
-const selectedBlock = ref(null)
-provide('selectedBlock', selectedBlock)
 
 function createRootCommand() {
   if (!hasRootNode.value) {
-    const root = {
+    elements.value = [{
       ...rootNode,
       data: { ...rootNode.data }
-    }
-    elements.value = [root]
+    }]
     selectedNodeIds.value = [ROOT_NODE_ID]
-    selectedBlock.value = root
     saveToHistory()
   }
 }
@@ -782,13 +778,11 @@ const getDefaultDataForType = (type) => {
 }
 
 // Node interaction handlers
-const onNodeClick = async (event, node) => {
-  const block = elements.value.find(el => el.id === node.id)
-  if (block) {
+const onNodeClick = (event, node) => {
+  // node.id — id выделенного блока
+  if (elements.value.find(el => el.id === node.id)) {
+    // Всегда обновляем, даже если выбран тот же id
     selectedNodeIds.value = [node.id]
-    selectedBlock.value = null
-    await nextTick()
-    selectedBlock.value = block
   }
 }
 
@@ -867,7 +861,6 @@ const deleteNode = () => {
     // Удаляем rootNode — сбрасываем всё
     elements.value = []
     selectedNodeIds.value = []
-    selectedBlock.value = null
     saveToHistory()
   }
 }
