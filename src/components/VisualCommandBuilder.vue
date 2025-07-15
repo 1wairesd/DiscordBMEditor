@@ -7,8 +7,8 @@
         <button @click="undo" :disabled="!canUndo" class="btn btn-secondary">↶ Отменить</button>
         <button @click="redo" :disabled="!canRedo" class="btn btn-secondary">↷ Повторить</button>
         <!-- Меню управления -->
-        <div class="menu-dropdown" style="position: relative;">
-          <button @click="menuOpen = !menuOpen" class="btn btn-info">☰ Меню</button>
+        <div class="menu-dropdown" style="position: relative;" ref="menuDropdownRef">
+          <button @click="menuOpen = !menuOpen" class="btn btn-info" ref="menuButtonRef">☰ Меню</button>
           <div v-if="menuOpen" class="menu-list">
             <button @click="saveSchema; menuOpen = false" class="btn btn-primary menu-btn">Сохранить схему</button>
             <button @click="loadSchema; menuOpen = false" class="btn btn-secondary menu-btn">Загрузить схему</button>
@@ -526,7 +526,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted } from 'vue'
+import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 import { VueFlow, ConnectionMode } from '@vue-flow/core'
 import '@vue-flow/core/dist/style.css'
 import '@vue-flow/core/dist/theme-default.css'
@@ -567,6 +567,23 @@ const selectedNode = ref(null)
 const showPreview = ref(false)
 const previewTab = ref('yaml')
 const menuOpen = ref(false)
+const menuDropdownRef = ref(null)
+const menuButtonRef = ref(null)
+
+function handleClickOutside(event) {
+  if (!menuOpen.value) return;
+  const menu = menuDropdownRef.value;
+  const btn = menuButtonRef.value;
+  if (menu && !menu.contains(event.target) && btn && !btn.contains(event.target)) {
+    menuOpen.value = false;
+  }
+}
+onMounted(() => {
+  document.addEventListener('mousedown', handleClickOutside)
+})
+onBeforeUnmount(() => {
+  document.removeEventListener('mousedown', handleClickOutside)
+})
 
 // History for undo/redo
 const history = ref([])
