@@ -520,7 +520,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { VueFlow, ConnectionMode } from '@vue-flow/core'
 import '@vue-flow/core/dist/style.css'
 import '@vue-flow/core/dist/theme-default.css'
@@ -597,6 +597,24 @@ const connectionRules = {
 watch(elements, () => {
   validateSchema()
 }, { deep: true })
+
+// Автосохранение схемы в localStorage
+watch(elements, () => {
+  localStorage.setItem('discordbm-schema', JSON.stringify(elements.value));
+}, { deep: true })
+
+// Загрузка схемы из localStorage при старте
+onMounted(() => {
+  const saved = localStorage.getItem('discordbm-schema');
+  if (saved) {
+    try {
+      elements.value = JSON.parse(saved);
+    } catch (e) {
+      // Если localStorage повреждён — игнорируем
+      elements.value = [];
+    }
+  }
+})
 
 // Drag and drop handlers
 const onDragStart = (event, block) => {
