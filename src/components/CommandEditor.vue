@@ -206,9 +206,12 @@ onUnmounted(() => {
 .workflow-editor {
   background: #23272b;
   border-radius: 10px;
-  padding: 18px 18px 0 18px;
   margin-bottom: 24px;
-  min-height: 700px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  width: 100%;
 }
 .workflow-header {
   display: flex;
@@ -269,9 +272,9 @@ onUnmounted(() => {
 .workflow-canvas {
   background: #23272b;
   border-radius: 10px;
-  min-height: 600px;
-  padding: 0;
-  margin-bottom: 0;
+  flex: 1;
+  min-height: 0;
+  width: 100%;
   box-shadow: 0 2px 16px #0004;
   border: 2px solid #2e3338;
   position: relative;
@@ -281,6 +284,8 @@ onUnmounted(() => {
     radial-gradient(circle, #444 1px, transparent 1.5px);
   background-size: 32px 32px;
   background-position: 0 0, 16px 16px;
+  padding: 0;
+  margin-bottom: 0;
 }
 .node {
   display: flex;
