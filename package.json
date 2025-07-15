@@ -13,7 +13,8 @@
     "axios": "^1.6.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "vue": "^3.5.17"
+    "vue": "^3.5.17",
+    "vue3-react-wrapper": "^1.0.0"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.0.0",
