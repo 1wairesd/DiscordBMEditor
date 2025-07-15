@@ -4,11 +4,11 @@
       <div class="header-content">
         <h1>DiscordBM Editor</h1>
         <div class="header-actions">
-          <button @click="loadFromBytebin" class="btn btn-primary">Загрузить из Bytebin</button>
-          <button @click="saveToBytebin" class="btn btn-success">Сохранить в Bytebin</button>
+          <button @click="openSaveModal" class="btn btn-success btn-lg">Сохранить</button>
         </div>
       </div>
     </header>
+    <SaveModal v-if="showSaveModal" :bytebin-key="bytebinUrl" @close="showSaveModal = false" />
 
     <!-- Удалены tab-navigation и все, что связано с JSON редактором -->
 
@@ -29,11 +29,13 @@
 <script>
 import { ref, nextTick } from 'vue';
 import VisualCommandBuilder from './components/VisualCommandBuilder.vue'
+import SaveModal from './components/SaveModal.vue'
 
 export default {
   name: 'App',
   components: {
-    VisualCommandBuilder
+    VisualCommandBuilder,
+    SaveModal
   },
   data() {
     return {
@@ -42,10 +44,15 @@ export default {
       lastSaved: null,
       bytebinUrl: null,
       selectedCommandIndex: null,
-      commandRefs: []
+      commandRefs: [],
+      showSaveModal: false
     }
   },
   methods: {
+    openSaveModal() {
+      this.saveToBytebin();
+      this.showSaveModal = true;
+    },
     // selectCommand, addCommand, removeCommand, duplicateCommand, addOption, removeOption, addAction, removeAction, addCondition, removeCondition оставляем если нужны для визуального редактора
     async loadFromBytebin() {
       const code = prompt('Введите код Bytebin:')
@@ -188,5 +195,10 @@ body {
   align-items: center;
   font-size: 0.75rem;
   color: #9ca3af;
+}
+
+.btn-lg {
+  font-size: 1.25rem;
+  padding: 0.75rem 2.5rem;
 }
 </style> 
