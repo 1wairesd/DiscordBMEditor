@@ -97,6 +97,29 @@
         </div>
         
         <div class="sidebar-content">
+          <!-- Root Block Settings -->
+          <div v-if="selectedNode && selectedNode.id === ROOT_NODE_ID" class="form-section">
+            <h4>Настройки команды</h4>
+            <div class="form-group">
+              <label>Имя команды:</label>
+              <input v-model="selectedNode.data.name" type="text" placeholder="hello" class="form-input" @input="saveToHistory" />
+            </div>
+            <div class="form-group">
+              <label>Описание:</label>
+              <input v-model="selectedNode.data.description" type="text" placeholder="Says hello to the user" class="form-input" @input="saveToHistory" />
+            </div>
+            <div class="form-group">
+              <label>Контекст:</label>
+              <select v-model="selectedNode.data.context" class="form-select" @change="saveToHistory">
+                <option value="server">server</option>
+                <option value="both">both</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label><input type="checkbox" v-model="selectedNode.data.ephemeral" class="form-checkbox" @change="saveToHistory" /> ephemeral</label>
+            </div>
+          </div>
+
           <!-- Options Form -->
           <div v-if="selectedNode.data.type === 'option'" class="form-section">
             <h4>Настройки опции</h4>
