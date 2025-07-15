@@ -4,6 +4,7 @@
     <div class="header">
       <h2>Визуальный редактор команд</h2>
       <div class="header-actions">
+        <button @click="openCommandsModal" class="btn btn-info">Команды</button>
         <button @click="undo" :disabled="!canUndo" class="btn btn-secondary">↶ Отменить</button>
         <button @click="redo" :disabled="!canRedo" class="btn btn-secondary">↷ Повторить</button>
         <!-- Меню управления -->
@@ -527,6 +528,24 @@
         </div>
       </div>
     </div>
+    <div v-if="showCommandsModal" class="modal-overlay" @click.self="showCommandsModal = false">
+      <div class="modal-box">
+        <button class="close-btn" @click="showCommandsModal = false">×</button>
+        <h2>Выберите команду</h2>
+        <input v-model="commandSearch" placeholder="Поиск..." class="modal-search" />
+        <div v-if="commandsLoading" class="modal-loading">Загрузка...</div>
+        <div v-else-if="commandsError" class="modal-error">Ошибка загрузки: {{ commandsError }}</div>
+        <ul class="modal-list">
+          <li v-for="(cmd, idx) in filteredCommands" :key="idx" class="modal-list-item">
+            <div class="cmd-main">
+              <div class="cmd-name">{{ cmd.name }}</div>
+              <div class="cmd-desc">{{ cmd.description }}</div>
+            </div>
+            <button class="btn btn-primary" @click="selectCommand(idx)">Загрузить</button>
+          </li>
+        </ul>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -536,6 +555,7 @@ import { VueFlow, ConnectionMode } from '@vue-flow/core'
 import '@vue-flow/core/dist/style.css'
 import '@vue-flow/core/dist/theme-default.css'
 import CustomNode from './CustomNode.vue'
+import axios from 'axios'
 
 // Register custom node type
 const nodeTypes = {
@@ -1135,6 +1155,130 @@ onMounted(() => {
 onBeforeUnmount(() => {
   window.removeEventListener('keydown', handleKeydown)
 })
+
+const showCommandsModal = ref(false)
+const commands = ref([])
+const commandsLoading = ref(false)
+const commandsError = ref('')
+const commandSearch = ref('')
+const filteredCommands = computed(() => {
+  if (!commandSearch.value) return commands.value
+  return commands.value.filter(cmd =>
+    (cmd.name || '').toLowerCase().includes(commandSearch.value.toLowerCase()) ||
+    (cmd.description || '').toLowerCase().includes(commandSearch.value.toLowerCase())
+  )
+})
+
+function openCommandsModal() {
+  showCommandsModal.value = true
+  if (commands.value.length === 0) {
+    loadCommandsFromBytebin()
+  }
+}
+
+async function loadCommandsFromBytebin() {
+  commandsLoading.value = true
+  commandsError.value = ''
+  try {
+    // Получаем ключ из URL (hash)
+    const hash = window.location.hash.replace('#', '')
+    if (!hash) {
+      commandsError.value = 'Нет кода Bytebin в URL.'
+      commandsLoading.value = false
+      return
+    }
+    const url = `https://bytebin.lucko.me/${hash}`
+    const resp = await axios.get(url, { responseType: 'json' })
+    // Ожидаем структуру { commands: [...] }
+    let data = resp.data
+    if (typeof data === 'string') data = JSON.parse(data)
+    if (data.commands && Array.isArray(data.commands)) {
+      commands.value = data.commands
+    } else if (Array.isArray(data)) {
+      commands.value = data
+    } else {
+      commandsError.value = 'Некорректный формат данных.'
+    }
+  } catch (e) {
+    commandsError.value = e.message || 'Ошибка загрузки.'
+  } finally {
+    commandsLoading.value = false
+  }
+}
+
+function selectCommand(idx) {
+  const cmd = filteredCommands.value[idx]
+  if (!cmd) return
+  // Преобразуем команду в nodes для редактора
+  // Очищаем все, кроме rootNode
+  elements.value = [
+    {
+      ...rootNode,
+      data: {
+        ...rootNode.data,
+        name: cmd.name || '/',
+        description: cmd.description || '',
+        context: cmd.context || 'server',
+        ephemeral: cmd.ephemeral || false
+      }
+    }
+  ]
+  nodeIdCounter = 1
+  // Добавляем options
+  if (Array.isArray(cmd.options)) {
+    for (const opt of cmd.options) {
+      elements.value.push({
+        id: `node-${nodeIdCounter++}`,
+        type: 'custom',
+        position: { x: 400 + nodeIdCounter * 40, y: 300 },
+        data: {
+          type: 'option',
+          name: opt.name,
+          description: opt.description,
+          optionType: opt.type,
+          required: opt.required || false
+        }
+      })
+    }
+  }
+  // Добавляем actions
+  if (Array.isArray(cmd.actions)) {
+    for (const act of cmd.actions) {
+      elements.value.push({
+        id: `node-${nodeIdCounter++}`,
+        type: 'custom',
+        position: { x: 400 + nodeIdCounter * 40, y: 400 },
+        data: {
+          type: 'action',
+          name: act.label || act.type,
+          description: act.message || '',
+          actionType: act.type,
+          ...act
+        }
+      })
+    }
+  }
+  // Добавляем conditions
+  if (Array.isArray(cmd.conditions)) {
+    for (const cond of cmd.conditions) {
+      elements.value.push({
+        id: `node-${nodeIdCounter++}`,
+        type: 'custom',
+        position: { x: 400 + nodeIdCounter * 40, y: 500 },
+        data: {
+          type: 'condition',
+          name: cond.type,
+          description: '',
+          conditionType: cond.type,
+          ...cond
+        }
+      })
+    }
+  }
+  selectedNodeIds.value = [ROOT_NODE_ID]
+  saveToHistory()
+  showCommandsModal.value = false
+}
 </script>
 
 <style scoped>
@@ -1743,5 +1887,94 @@ onBeforeUnmount(() => {
 .menu-btn:hover {
   background: #3b82f6;
   color: #fff;
+}
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.modal-box {
+  background: #23272b;
+  border-radius: 12px;
+  padding: 2rem 2.5rem 2rem 2.5rem;
+  min-width: 340px;
+  max-width: 90vw;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.35);
+  position: relative;
+  color: #fff;
+}
+.close-btn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  color: #aaa;
+  font-size: 2rem;
+  cursor: pointer;
+}
+.close-btn:hover {
+  color: #fff;
+}
+.modal-search {
+  width: 100%;
+  margin-bottom: 1rem;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: none;
+  background: #181c20;
+  color: #fff;
+}
+.modal-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-height: 320px;
+  overflow-y: auto;
+}
+.modal-list-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid #3335;
+}
+.cmd-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  min-width: 0;
+}
+.cmd-name {
+  font-weight: 700;
+  font-size: 1.08em;
+  color: #fff;
+  margin-bottom: 2px;
+  margin-left: 2px;
+}
+.cmd-desc {
+  color: #b9bbbe;
+  font-size: 0.97em;
+  margin-left: 6px;
+  margin-top: 0;
+  max-width: 180px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.modal-loading {
+  color: #aaa;
+  margin-bottom: 1rem;
+}
+.modal-error {
+  color: #ff4d4d;
+  margin-bottom: 1rem;
 }
 </style> 
