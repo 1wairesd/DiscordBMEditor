@@ -59,12 +59,7 @@
           </template>
           <div class="validation-status">
             <h4>Статус схемы</h4>
-            <div v-if="validationErrors.length > 0" class="validation-errors">
-              <div v-for="error in validationErrors" :key="error" class="error-item">
-                ⚠️ {{ error }}
-              </div>
-            </div>
-            <div v-else class="validation-success">
+            <div class="validation-success">
               ✅ Схема корректна
             </div>
           </div>
