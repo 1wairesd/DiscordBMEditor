@@ -26,7 +26,7 @@
             draggable="true"
             @dragstart="onDragStart($event, option)"
           >
-            <div class="palette-item-icon">⚙️</div>
+            <div class="palette-item-icon">{{ option.icon }}</div>
             <div class="palette-item-label">{{ option.label }}</div>
           </div>
         </div>
@@ -40,7 +40,7 @@
             draggable="true"
             @dragstart="onDragStart($event, action)"
           >
-            <div class="palette-item-icon">🎯</div>
+            <div class="palette-item-icon">{{ action.icon }}</div>
             <div class="palette-item-label">{{ action.label }}</div>
           </div>
         </div>
@@ -54,7 +54,7 @@
             draggable="true"
             @dragstart="onDragStart($event, condition)"
           >
-            <div class="palette-item-icon">🔍</div>
+            <div class="palette-item-icon">{{ condition.icon }}</div>
             <div class="palette-item-label">{{ condition.label }}</div>
           </div>
         </div>
@@ -139,23 +139,10 @@
             <div class="form-group">
               <label>Тип опции:</label>
               <select v-model="selectedNode.data.optionType" class="form-select" @change="saveToHistory">
-                <option value="string">Строка</option>
-                <option value="number">Число</option>
-                <option value="boolean">Да/Нет</option>
-                <option value="player">Игрок</option>
-                <option value="world">Мир</option>
+                <option value="STRING">Строка (STRING)</option>
+                <option value="USER">Пользователь (USER)</option>
+                <option value="CHANNEL">Канал (CHANNEL)</option>
               </select>
-            </div>
-
-            <div v-if="selectedNode.data.optionType === 'string'" class="form-group">
-              <label>Доступные значения (через запятую):</label>
-              <input 
-                v-model="selectedNode.data.values" 
-                type="text" 
-                placeholder="значение1, значение2, значение3"
-                class="form-input"
-                @input="saveToHistory"
-              />
             </div>
 
             <div class="form-group">
@@ -189,20 +176,19 @@
             <div class="form-group">
               <label>Тип действия:</label>
               <select v-model="selectedNode.data.actionType" class="form-select" @change="saveToHistory">
-                <option value="message">Отправить сообщение</option>
-                <option value="command">Выполнить команду</option>
-                <option value="teleport">Телепортация</option>
-                <option value="give">Выдать предмет</option>
-                <option value="effect">Эффект</option>
-                <option value="sound">Звук</option>
-                <option value="economy">Экономика</option>
-                <option value="warp">Варп</option>
-                <option value="kick">Кик/Бан</option>
-                <option value="group">Группа</option>
+                <option value="send_message">Отправить сообщение</option>
+                <option value="send_to_channel">Отправить в канал</option>
+                <option value="delete_message">Удалить сообщение</option>
+                <option value="button">Кнопка</option>
+                <option value="edit_component">Редактировать компонент</option>
+                <option value="send_form">Форма</option>
+                <option value="add_role">Добавить роль</option>
+                <option value="resolve_placeholders">Разрешить плейсхолдеры</option>
+                <option value="send_page">Отправить страницу</option>
               </select>
             </div>
 
-            <div v-if="selectedNode.data.actionType === 'message'" class="form-group">
+            <div v-if="selectedNode.data.actionType === 'send_message'" class="form-group">
               <label>Сообщение:</label>
               <textarea 
                 v-model="selectedNode.data.message" 
@@ -211,199 +197,221 @@
                 rows="3"
                 @input="saveToHistory"
               ></textarea>
-            </div>
-
-            <div v-if="selectedNode.data.actionType === 'command'" class="form-group">
-              <label>Команда:</label>
-              <input 
-                v-model="selectedNode.data.command" 
-                type="text" 
-                placeholder="Введите команду"
-                class="form-input"
-                @input="saveToHistory"
-              />
-            </div>
-
-            <div v-if="selectedNode.data.actionType === 'teleport'" class="form-group">
-              <label>Координаты:</label>
-              <div class="coordinates-input">
-                <input 
-                  v-model="selectedNode.data.x" 
-                  type="number" 
-                  placeholder="X"
-                  class="form-input coord-input"
-                  @input="saveToHistory"
-                />
-                <input 
-                  v-model="selectedNode.data.y" 
-                  type="number" 
-                  placeholder="Y"
-                  class="form-input coord-input"
-                  @input="saveToHistory"
-                />
-                <input 
-                  v-model="selectedNode.data.z" 
-                  type="number" 
-                  placeholder="Z"
-                  class="form-input coord-input"
-                  @input="saveToHistory"
-                />
-              </div>
-            </div>
-
-            <div v-if="selectedNode.data.actionType === 'give'" class="form-group">
-              <label>Предмет:</label>
-              <input 
-                v-model="selectedNode.data.item" 
-                type="text" 
-                placeholder="DIAMOND_SWORD"
-                class="form-input"
-                @input="saveToHistory"
-              />
-              <label>Количество:</label>
-              <input 
-                v-model="selectedNode.data.amount" 
-                type="number" 
-                placeholder="1"
-                class="form-input"
-                @input="saveToHistory"
-              />
-            </div>
-
-            <div v-if="selectedNode.data.actionType === 'effect'" class="form-group">
-              <label>Эффект:</label>
-              <select v-model="selectedNode.data.effect" class="form-select" @change="saveToHistory">
-                <option value="SPEED">Скорость</option>
-                <option value="SLOW">Замедление</option>
-                <option value="JUMP_BOOST">Прыжок</option>
-                <option value="STRENGTH">Сила</option>
-                <option value="WEAKNESS">Слабость</option>
-                <option value="INVISIBILITY">Невидимость</option>
-                <option value="NIGHT_VISION">Ночное зрение</option>
-                <option value="REGENERATION">Регенерация</option>
-                <option value="POISON">Яд</option>
-                <option value="FIRE_RESISTANCE">Огнестойкость</option>
+              <label>Тип ответа:</label>
+              <select v-model="selectedNode.data.response_type" class="form-select" @change="saveToHistory">
+                <option value="REPLY">Ответ (REPLY)</option>
+                <option value="edit_message">Редактировать сообщение</option>
               </select>
-              <label>Длительность (сек):</label>
+              <label>Метка:</label>
               <input 
-                v-model="selectedNode.data.duration" 
-                type="number" 
-                placeholder="30"
-                class="form-input"
-                @input="saveToHistory"
-              />
-              <label>Усиление:</label>
-              <input 
-                v-model="selectedNode.data.amplifier" 
-                type="number" 
-                placeholder="1"
-                class="form-input"
-                @input="saveToHistory"
-              />
-            </div>
-
-            <div v-if="selectedNode.data.actionType === 'sound'" class="form-group">
-              <label>Звук:</label>
-              <input 
-                v-model="selectedNode.data.sound" 
+                v-model="selectedNode.data.label" 
                 type="text" 
-                placeholder="entity.player.levelup"
-                class="form-input"
-                @input="saveToHistory"
-              />
-              <label>Громкость:</label>
-              <input 
-                v-model="selectedNode.data.volume" 
-                type="number" 
-                step="0.1"
-                placeholder="1.0"
-                class="form-input"
-                @input="saveToHistory"
-              />
-              <label>Тон:</label>
-              <input 
-                v-model="selectedNode.data.pitch" 
-                type="number" 
-                step="0.1"
-                placeholder="1.0"
+                placeholder="Метка для ссылки"
                 class="form-input"
                 @input="saveToHistory"
               />
             </div>
 
-            <div v-if="selectedNode.data.actionType === 'economy'" class="form-group">
-              <label>Сумма:</label>
-              <input 
-                v-model="selectedNode.data.amount" 
-                type="number" 
-                placeholder="100"
-                class="form-input"
-                @input="saveToHistory"
-              />
-              <label>Валюта:</label>
-              <select v-model="selectedNode.data.currency" class="form-select" @change="saveToHistory">
-                <option value="money">Деньги</option>
-                <option value="points">Очки</option>
-                <option value="tokens">Токены</option>
-              </select>
-            </div>
-
-            <div v-if="selectedNode.data.actionType === 'warp'" class="form-group">
-              <label>Название варпа:</label>
-              <input 
-                v-model="selectedNode.data.warpName" 
-                type="text" 
-                placeholder="spawn"
-                class="form-input"
-                @input="saveToHistory"
-              />
-            </div>
-
-            <div v-if="selectedNode.data.actionType === 'kick'" class="form-group">
-              <label>Причина:</label>
+            <div v-if="selectedNode.data.actionType === 'send_to_channel'" class="form-group">
+              <label>Сообщение:</label>
               <textarea 
-                v-model="selectedNode.data.reason" 
-                placeholder="Введите причину кика"
+                v-model="selectedNode.data.message" 
+                placeholder="Введите сообщение"
                 class="form-textarea"
-                rows="2"
+                rows="3"
                 @input="saveToHistory"
               ></textarea>
+              <label>Метка:</label>
+              <input 
+                v-model="selectedNode.data.label" 
+                type="text" 
+                placeholder="Метка для ссылки"
+                class="form-input"
+                @input="saveToHistory"
+              />
             </div>
 
-            <div v-if="selectedNode.data.actionType === 'ban'" class="form-group">
-              <label>Причина:</label>
+            <div v-if="selectedNode.data.actionType === 'delete_message'" class="form-group">
+              <label>Метка:</label>
+              <input 
+                v-model="selectedNode.data.label" 
+                type="text" 
+                placeholder="Метка сообщения для удаления"
+                class="form-input"
+                @input="saveToHistory"
+              />
+              <label>
+                <input 
+                  v-model="selectedNode.data.delete_all" 
+                  type="checkbox" 
+                  class="form-checkbox"
+                  @change="saveToHistory"
+                />
+                Удалить все
+              </label>
+              <label>Сообщение об удалении:</label>
+              <input 
+                v-model="selectedNode.data.response_message" 
+                type="text" 
+                placeholder="Сообщение после удаления"
+                class="form-input"
+                @input="saveToHistory"
+              />
+            </div>
+
+            <div v-if="selectedNode.data.actionType === 'button'" class="form-group">
+              <label>Текст кнопки:</label>
+              <input 
+                v-model="selectedNode.data.button_label" 
+                type="text" 
+                placeholder="Текст кнопки"
+                class="form-input"
+                @input="saveToHistory"
+              />
+              <label>Стиль кнопки:</label>
+              <select v-model="selectedNode.data.button_style" class="form-select" @change="saveToHistory">
+                <option value="PRIMARY">Основная (PRIMARY)</option>
+                <option value="SECONDARY">Вторичная (SECONDARY)</option>
+                <option value="SUCCESS">Успех (SUCCESS)</option>
+                <option value="DANGER">Опасность (DANGER)</option>
+                <option value="LINK">Ссылка (LINK)</option>
+              </select>
+              <label>URL (для LINK):</label>
+              <input 
+                v-model="selectedNode.data.button_url" 
+                type="text" 
+                placeholder="https://example.com"
+                class="form-input"
+                @input="saveToHistory"
+              />
+              <label>Эмодзи:</label>
+              <input 
+                v-model="selectedNode.data.button_emoji" 
+                type="text" 
+                placeholder="🔗"
+                class="form-input"
+                @input="saveToHistory"
+              />
+              <label>ID кнопки:</label>
+              <input 
+                v-model="selectedNode.data.button_id" 
+                type="text" 
+                placeholder="btn_click"
+                class="form-input"
+                @input="saveToHistory"
+              />
+              <label>Сообщение кнопки:</label>
+              <input 
+                v-model="selectedNode.data.button_message" 
+                type="text" 
+                placeholder="Сообщение при нажатии"
+                class="form-input"
+                @input="saveToHistory"
+              />
+              <label>
+                <input 
+                  v-model="selectedNode.data.button_disabled" 
+                  type="checkbox" 
+                  class="form-checkbox"
+                  @change="saveToHistory"
+                />
+                Отключена
+              </label>
+            </div>
+
+            <div v-if="selectedNode.data.actionType === 'edit_component'" class="form-group">
+              <label>Целевое сообщение:</label>
+              <input 
+                v-model="selectedNode.data.target_message" 
+                type="text" 
+                placeholder="Метка сообщения"
+                class="form-input"
+                @input="saveToHistory"
+              />
+              <label>ID компонента:</label>
+              <input 
+                v-model="selectedNode.data.component_id" 
+                type="text" 
+                placeholder="btn_click"
+                class="form-input"
+                @input="saveToHistory"
+              />
+              <label>Новый текст:</label>
+              <input 
+                v-model="selectedNode.data.button_label" 
+                type="text" 
+                placeholder="Новый текст кнопки"
+                class="form-input"
+                @input="saveToHistory"
+              />
+              <label>Новый стиль:</label>
+              <select v-model="selectedNode.data.button_style" class="form-select" @change="saveToHistory">
+                <option value="PRIMARY">Основная (PRIMARY)</option>
+                <option value="SECONDARY">Вторичная (SECONDARY)</option>
+                <option value="SUCCESS">Успех (SUCCESS)</option>
+                <option value="DANGER">Опасность (DANGER)</option>
+              </select>
+              <label>
+                <input 
+                  v-model="selectedNode.data.button_disabled" 
+                  type="checkbox" 
+                  class="form-checkbox"
+                  @change="saveToHistory"
+                />
+                Отключена
+              </label>
+            </div>
+
+            <div v-if="selectedNode.data.actionType === 'send_form'" class="form-group">
+              <label>Название формы:</label>
+              <input 
+                v-model="selectedNode.data.form_name" 
+                type="text" 
+                placeholder="feedback-form"
+                class="form-input"
+                @input="saveToHistory"
+              />
+            </div>
+
+            <div v-if="selectedNode.data.actionType === 'add_role'" class="form-group">
+              <label>ID роли:</label>
+              <input 
+                v-model="selectedNode.data.role_id" 
+                type="text" 
+                placeholder="1234567890123456789"
+                class="form-input"
+                @input="saveToHistory"
+              />
+            </div>
+
+            <div v-if="selectedNode.data.actionType === 'resolve_placeholders'" class="form-group">
+              <label>Шаблон:</label>
               <textarea 
-                v-model="selectedNode.data.reason" 
-                placeholder="Введите причину бана"
+                v-model="selectedNode.data.template" 
+                placeholder="%player_name% has %player_health% health"
                 class="form-textarea"
-                rows="2"
+                rows="3"
                 @input="saveToHistory"
               ></textarea>
-              <label>Длительность (дни):</label>
+              <label>Игрок:</label>
               <input 
-                v-model="selectedNode.data.duration" 
-                type="number" 
-                placeholder="0 (навсегда)"
+                v-model="selectedNode.data.player" 
+                type="text" 
+                placeholder="{player}"
                 class="form-input"
                 @input="saveToHistory"
               />
             </div>
 
-            <div v-if="selectedNode.data.actionType === 'group'" class="form-group">
-              <label>Название группы:</label>
+            <div v-if="selectedNode.data.actionType === 'send_page'" class="form-group">
+              <label>ID страницы:</label>
               <input 
-                v-model="selectedNode.data.groupName" 
+                v-model="selectedNode.data.page_id" 
                 type="text" 
-                placeholder="vip"
+                placeholder="1-embed"
                 class="form-input"
                 @input="saveToHistory"
               />
-              <label>Действие:</label>
-              <select v-model="selectedNode.data.groupAction" class="form-select" @change="saveToHistory">
-                <option value="add">Добавить в группу</option>
-                <option value="remove">Удалить из группы</option>
-                <option value="set">Установить группу</option>
-              </select>
             </div>
 
             <div class="form-group">
@@ -436,148 +444,30 @@
             <div class="form-group">
               <label>Тип условия:</label>
               <select v-model="selectedNode.data.conditionType" class="form-select" @change="saveToHistory">
-                <option value="permission">Права</option>
-                <option value="world">Мир</option>
-                <option value="gamemode">Режим игры</option>
-                <option value="time">Время</option>
-                <option value="weather">Погода</option>
-                <option value="custom">Пользовательское</option>
-                <option value="economy">Экономика</option>
-                <option value="health">Здоровье</option>
-                <option value="experience">Опыт</option>
-                <option value="level">Уровень</option>
-                <option value="inventory">Инвентарь</option>
+                <option value="permission">Права (permission)</option>
+                <option value="chance">Шанс (chance)</option>
               </select>
             </div>
 
             <div v-if="selectedNode.data.conditionType === 'permission'" class="form-group">
-              <label>Право:</label>
+              <label>ID роли:</label>
               <input 
-                v-model="selectedNode.data.permission" 
+                v-model="selectedNode.data.role_id" 
                 type="text" 
-                placeholder="example.permission"
+                placeholder="1234567890123456789"
                 class="form-input"
                 @input="saveToHistory"
               />
             </div>
 
-            <div v-if="selectedNode.data.conditionType === 'world'" class="form-group">
-              <label>Мир:</label>
+            <div v-if="selectedNode.data.conditionType === 'chance'" class="form-group">
+              <label>Процент шанса:</label>
               <input 
-                v-model="selectedNode.data.world" 
-                type="text" 
-                placeholder="world"
-                class="form-input"
-                @input="saveToHistory"
-              />
-            </div>
-
-            <div v-if="selectedNode.data.conditionType === 'gamemode'" class="form-group">
-              <label>Режим игры:</label>
-              <select v-model="selectedNode.data.gamemode" class="form-select" @change="saveToHistory">
-                <option value="SURVIVAL">Выживание</option>
-                <option value="CREATIVE">Творческий</option>
-                <option value="ADVENTURE">Приключения</option>
-                <option value="SPECTATOR">Наблюдатель</option>
-              </select>
-            </div>
-
-            <div v-if="selectedNode.data.conditionType === 'time'" class="form-group">
-              <label>Время дня:</label>
-              <select v-model="selectedNode.data.time" class="form-select" @change="saveToHistory">
-                <option value="day">День</option>
-                <option value="night">Ночь</option>
-                <option value="morning">Утро</option>
-                <option value="evening">Вечер</option>
-              </select>
-            </div>
-
-            <div v-if="selectedNode.data.conditionType === 'weather'" class="form-group">
-              <label>Погода:</label>
-              <select v-model="selectedNode.data.weather" class="form-select" @change="saveToHistory">
-                <option value="clear">Ясно</option>
-                <option value="rain">Дождь</option>
-                <option value="thunder">Гроза</option>
-              </select>
-            </div>
-
-            <div v-if="selectedNode.data.conditionType === 'custom'" class="form-group">
-              <label>Выражение:</label>
-              <textarea 
-                v-model="selectedNode.data.expression" 
-                placeholder="Введите JavaScript выражение"
-                class="form-textarea"
-                rows="3"
-                @input="saveToHistory"
-              ></textarea>
-            </div>
-
-            <div v-if="selectedNode.data.conditionType === 'economy'" class="form-group">
-              <label>Минимальная сумма:</label>
-              <input 
-                v-model="selectedNode.data.amount" 
+                v-model="selectedNode.data.percent" 
                 type="number" 
-                placeholder="100"
-                class="form-input"
-                @input="saveToHistory"
-              />
-              <label>Валюта:</label>
-              <select v-model="selectedNode.data.currency" class="form-select" @change="saveToHistory">
-                <option value="money">Деньги</option>
-                <option value="points">Очки</option>
-                <option value="tokens">Токены</option>
-              </select>
-            </div>
-
-            <div v-if="selectedNode.data.conditionType === 'health'" class="form-group">
-              <label>Минимальное здоровье:</label>
-              <input 
-                v-model="selectedNode.data.health" 
-                type="number" 
-                min="0"
-                max="20"
+                min="1"
+                max="100"
                 placeholder="10"
-                class="form-input"
-                @input="saveToHistory"
-              />
-            </div>
-
-            <div v-if="selectedNode.data.conditionType === 'experience'" class="form-group">
-              <label>Минимальный опыт:</label>
-              <input 
-                v-model="selectedNode.data.experience" 
-                type="number" 
-                placeholder="100"
-                class="form-input"
-                @input="saveToHistory"
-              />
-            </div>
-
-            <div v-if="selectedNode.data.conditionType === 'level'" class="form-group">
-              <label>Минимальный уровень:</label>
-              <input 
-                v-model="selectedNode.data.level" 
-                type="number" 
-                placeholder="10"
-                class="form-input"
-                @input="saveToHistory"
-              />
-            </div>
-
-            <div v-if="selectedNode.data.conditionType === 'inventory'" class="form-group">
-              <label>Предмет:</label>
-              <input 
-                v-model="selectedNode.data.itemName" 
-                type="text" 
-                placeholder="DIAMOND_SWORD"
-                class="form-input"
-                @input="saveToHistory"
-              />
-              <label>Минимальное количество:</label>
-              <input 
-                v-model="selectedNode.data.itemAmount" 
-                type="number" 
-                placeholder="1"
                 class="form-input"
                 @input="saveToHistory"
               />
@@ -643,37 +533,26 @@ const nodeTypes = {
 
 // Available blocks for palette
 const availableOptions = ref([
-  { type: 'option', label: 'Опция', icon: '⚙️' },
-  { type: 'option', label: 'Числовая опция', icon: '🔢' },
-  { type: 'option', label: 'Логическая опция', icon: '✅' },
-  { type: 'option', label: 'Опция игрока', icon: '👤' },
-  { type: 'option', label: 'Опция мира', icon: '🌍' }
+  { type: 'option', label: 'Строка (STRING)', icon: '📝' },
+  { type: 'option', label: 'Пользователь (USER)', icon: '👤' },
+  { type: 'option', label: 'Канал (CHANNEL)', icon: '📢' }
 ])
 
 const availableActions = ref([
-  { type: 'action', label: 'Сообщение', icon: '💬' },
-  { type: 'action', label: 'Команда', icon: '⚡' },
-  { type: 'action', label: 'Телепорт', icon: '🚀' },
-  { type: 'action', label: 'Выдать предмет', icon: '🎁' },
-  { type: 'action', label: 'Эффект', icon: '✨' },
-  { type: 'action', label: 'Звук', icon: '🔊' },
-  { type: 'action', label: 'Экономика', icon: '💰' },
-  { type: 'action', label: 'Варп', icon: '📍' },
-  { type: 'action', label: 'Кик/Бан', icon: '🚫' },
-  { type: 'action', label: 'Группа', icon: '👥' }
+  { type: 'action', label: 'Отправить сообщение', icon: '💬' },
+  { type: 'action', label: 'Отправить в канал', icon: '📢' },
+  { type: 'action', label: 'Удалить сообщение', icon: '🗑️' },
+  { type: 'action', label: 'Кнопка', icon: '🔘' },
+  { type: 'action', label: 'Редактировать компонент', icon: '✏️' },
+  { type: 'action', label: 'Форма', icon: '📋' },
+  { type: 'action', label: 'Добавить роль', icon: '👑' },
+  { type: 'action', label: 'Разрешить плейсхолдеры', icon: '🔧' },
+  { type: 'action', label: 'Отправить страницу', icon: '📄' }
 ])
 
 const availableConditions = ref([
-  { type: 'condition', label: 'Права', icon: '🔐' },
-  { type: 'condition', label: 'Мир', icon: '🌍' },
-  { type: 'condition', label: 'Режим игры', icon: '🎮' },
-  { type: 'condition', label: 'Время', icon: '⏰' },
-  { type: 'condition', label: 'Погода', icon: '🌤️' },
-  { type: 'condition', label: 'Экономика', icon: '💰' },
-  { type: 'condition', label: 'Здоровье', icon: '❤️' },
-  { type: 'condition', label: 'Опыт', icon: '⭐' },
-  { type: 'condition', label: 'Инвентарь', icon: '🎒' },
-  { type: 'condition', label: 'Пользовательское', icon: '🔧' }
+  { type: 'condition', label: 'Права (permission)', icon: '🔐' },
+  { type: 'condition', label: 'Шанс (chance)', icon: '🎲' }
 ])
 
 // Vue Flow elements
@@ -758,50 +637,40 @@ const getDefaultDataForType = (type) => {
   switch (type) {
     case 'option':
       return {
-        optionType: 'string',
-        values: '',
+        optionType: 'STRING',
         required: false
       }
     case 'action':
       return {
-        actionType: 'message',
+        actionType: 'send_message',
         message: '',
-        command: '',
-        delay: 0,
-        x: 0, y: 0, z: 0,
-        item: '',
-        amount: 1,
-        effect: '',
-        duration: 30,
-        amplifier: 1,
-        sound: '',
-        volume: 1.0,
-        pitch: 1.0,
-        amount: 0,
-        currency: 'money',
-        warpName: '',
-        reason: '',
-        duration: 0,
-        groupName: '',
-        permission: '',
-        groupAction: 'add' // Added for new action types
+        response_type: 'REPLY',
+        label: '',
+        embed: null,
+        channel: '',
+        delete_all: false,
+        response_message: '',
+        button_label: '',
+        button_style: 'PRIMARY',
+        button_url: '',
+        button_emoji: '',
+        button_disabled: false,
+        button_id: '',
+        button_message: '',
+        target_id: '',
+        target_message: '',
+        component_id: '',
+        form_name: '',
+        role_id: '',
+        template: '',
+        player: '',
+        page_id: ''
       }
     case 'condition':
       return {
         conditionType: 'permission',
-        permission: '',
-        world: '',
-        gamemode: 'SURVIVAL',
-        time: 'day',
-        weather: 'clear',
-        expression: '',
-        amount: 0,
-        currency: 'money',
-        health: 20,
-        experience: 0,
-        level: 0,
-        itemName: '',
-        itemAmount: 1
+        role_id: '',
+        percent: 50
       }
     default:
       return {}
@@ -1059,130 +928,44 @@ const convertFlowToYaml = (elements) => {
   const edges = elements.filter(el => el.source && el.target)
   
   // Build command structure from nodes and edges
-  const commands = {}
+  const commands = []
   
-  // Process options
+  // Group nodes by command (assuming first option node starts a new command)
   const optionNodes = nodes.filter(n => n.data.type === 'option')
-  if (optionNodes.length > 0) {
-    commands.options = {}
-    optionNodes.forEach(node => {
-      commands.options[node.data.name] = {
-        description: node.data.description,
-        type: node.data.optionType,
-        required: node.data.required
-      }
-      if (node.data.values) {
-        commands.options[node.data.name].values = node.data.values.split(',').map(v => v.trim())
-      }
-    })
-  }
-  
-  // Process actions and conditions
   const actionNodes = nodes.filter(n => n.data.type === 'action')
   const conditionNodes = nodes.filter(n => n.data.type === 'condition')
   
-  if (actionNodes.length > 0) {
-    commands.actions = actionNodes.map(action => {
-      const actionData = {
-        type: action.data.actionType,
-        name: action.data.name,
-        delay: action.data.delay || 0
-      }
-      
-      // Add type-specific properties
-      switch (action.data.actionType) {
-        case 'message':
-          actionData.message = action.data.message
-          break
-        case 'command':
-          actionData.command = action.data.command
-          break
-        case 'teleport':
-          actionData.x = action.data.x
-          actionData.y = action.data.y
-          actionData.z = action.data.z
-          break
-        case 'give':
-          actionData.item = action.data.item
-          actionData.amount = action.data.amount
-          break
-        case 'effect':
-          actionData.effect = action.data.effect
-          actionData.duration = action.data.duration
-          actionData.amplifier = action.data.amplifier
-          break
-        case 'sound':
-          actionData.sound = action.data.sound
-          actionData.volume = action.data.volume
-          actionData.pitch = action.data.pitch
-          break
-        case 'economy':
-          actionData.amount = action.data.amount
-          actionData.currency = action.data.currency
-          break
-        case 'warp':
-          actionData.warpName = action.data.warpName
-          break
-        case 'kick':
-        case 'ban':
-          actionData.reason = action.data.reason
-          if (action.data.actionType === 'ban') {
-            actionData.duration = action.data.duration
-          }
-          break
-        case 'group':
-          actionData.groupName = action.data.groupName
-          actionData.groupAction = action.data.groupAction
-          break
-      }
-      
-      return actionData
-    })
+  // Create a simple command structure
+  const command = {
+    name: "generated_command",
+    description: "Generated by Visual Editor",
+    context: "server",
+    ephemeral: false
   }
   
+  // Process options
+  if (optionNodes.length > 0) {
+    command.options = optionNodes.map(node => ({
+      name: node.data.name || "option",
+      type: node.data.optionType || "STRING",
+      description: node.data.description || "Generated option",
+      required: node.data.required || false
+    }))
+  }
+  
+  // Process conditions
   if (conditionNodes.length > 0) {
-    commands.conditions = conditionNodes.map(condition => {
+    command.conditions = conditionNodes.map(condition => {
       const conditionData = {
-        type: condition.data.conditionType,
-        name: condition.data.name
+        type: condition.data.conditionType
       }
       
-      // Add type-specific properties
       switch (condition.data.conditionType) {
         case 'permission':
-          conditionData.permission = condition.data.permission
+          conditionData.role_id = condition.data.role_id
           break
-        case 'world':
-          conditionData.world = condition.data.world
-          break
-        case 'gamemode':
-          conditionData.gamemode = condition.data.gamemode
-          break
-        case 'time':
-          conditionData.time = condition.data.time
-          break
-        case 'weather':
-          conditionData.weather = condition.data.weather
-          break
-        case 'custom':
-          conditionData.expression = condition.data.expression
-          break
-        case 'economy':
-          conditionData.amount = condition.data.amount
-          conditionData.currency = condition.data.currency
-          break
-        case 'health':
-          conditionData.health = condition.data.health
-          break
-        case 'experience':
-          conditionData.experience = condition.data.experience
-          break
-        case 'level':
-          conditionData.level = condition.data.level
-          break
-        case 'inventory':
-          conditionData.itemName = condition.data.itemName
-          conditionData.itemAmount = condition.data.itemAmount
+        case 'chance':
+          conditionData.percent = condition.data.percent
           break
       }
       
@@ -1190,7 +973,67 @@ const convertFlowToYaml = (elements) => {
     })
   }
   
-  return commands
+  // Process actions
+  if (actionNodes.length > 0) {
+    command.actions = actionNodes.map(action => {
+      const actionData = {
+        type: action.data.actionType
+      }
+      
+      // Add type-specific properties
+      switch (action.data.actionType) {
+        case 'send_message':
+          if (action.data.message) actionData.message = action.data.message
+          if (action.data.response_type) actionData.response_type = action.data.response_type
+          if (action.data.label) actionData.label = action.data.label
+          break
+        case 'send_to_channel':
+          if (action.data.message) actionData.message = action.data.message
+          if (action.data.label) actionData.label = action.data.label
+          break
+        case 'delete_message':
+          if (action.data.label) actionData.label = action.data.label
+          if (action.data.delete_all !== undefined) actionData.delete_all = action.data.delete_all
+          if (action.data.response_message) actionData.response_message = action.data.response_message
+          break
+        case 'button':
+          if (action.data.button_label) actionData.label = action.data.button_label
+          if (action.data.button_style) actionData.style = action.data.button_style
+          if (action.data.button_url) actionData.url = action.data.button_url
+          if (action.data.button_emoji) actionData.emoji = action.data.button_emoji
+          if (action.data.button_id) actionData.id = action.data.button_id
+          if (action.data.button_message) actionData.message = action.data.button_message
+          if (action.data.button_disabled !== undefined) actionData.disabled = action.data.button_disabled
+          break
+        case 'edit_component':
+          if (action.data.target_message) actionData.target_message = action.data.target_message
+          if (action.data.component_id) actionData.component_id = action.data.component_id
+          if (action.data.button_label) actionData.label = action.data.button_label
+          if (action.data.button_style) actionData.style = action.data.button_style
+          if (action.data.button_disabled !== undefined) actionData.disabled = action.data.button_disabled
+          break
+        case 'send_form':
+          if (action.data.form_name) actionData.form_name = action.data.form_name
+          break
+        case 'add_role':
+          if (action.data.role_id) actionData.role_id = action.data.role_id
+          break
+        case 'resolve_placeholders':
+          if (action.data.template) actionData.template = action.data.template
+          if (action.data.player) actionData.player = action.data.player
+          break
+        case 'send_page':
+          if (action.data.page_id) actionData.page_id = action.data.page_id
+          break
+      }
+      
+      return actionData
+    })
+  }
+  
+  commands.push(command)
+  
+  return { commands }
 }
 
 // Preview functionality

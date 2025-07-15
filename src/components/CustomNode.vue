@@ -93,23 +93,24 @@ const getDefaultDescription = () => {
 
 const getOptionTypeLabel = () => {
   const typeMap = {
-    'string': 'Строка',
-    'number': 'Число',
-    'boolean': 'Да/Нет',
-    'player': 'Игрок',
-    'world': 'Мир'
+    'STRING': 'Строка',
+    'USER': 'Пользователь',
+    'CHANNEL': 'Канал'
   }
   return typeMap[props.data.optionType] || props.data.optionType
 }
 
 const getActionTypeLabel = () => {
   const typeMap = {
-    'message': 'Сообщение',
-    'command': 'Команда',
-    'teleport': 'Телепорт',
-    'give': 'Выдать предмет',
-    'effect': 'Эффект',
-    'sound': 'Звук'
+    'send_message': 'Сообщение',
+    'send_to_channel': 'В канал',
+    'delete_message': 'Удалить',
+    'button': 'Кнопка',
+    'edit_component': 'Редактировать',
+    'send_form': 'Форма',
+    'add_role': 'Роль',
+    'resolve_placeholders': 'Плейсхолдеры',
+    'send_page': 'Страница'
   }
   return typeMap[props.data.actionType] || props.data.actionType
 }
@@ -117,11 +118,7 @@ const getActionTypeLabel = () => {
 const getConditionTypeLabel = () => {
   const typeMap = {
     'permission': 'Права',
-    'world': 'Мир',
-    'gamemode': 'Режим игры',
-    'time': 'Время',
-    'weather': 'Погода',
-    'custom': 'Пользовательское'
+    'chance': 'Шанс'
   }
   return typeMap[props.data.conditionType] || props.data.conditionType
 }
