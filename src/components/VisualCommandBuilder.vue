@@ -661,6 +661,10 @@ const onDrop = (event) => {
     }
   }
   
+  // Гарантируем, что rootNode всегда есть
+  if (!elements.value.find(el => el.id === ROOT_NODE_ID)) {
+    elements.value.unshift(rootNode)
+  }
   elements.value.push(newNode)
   saveToHistory()
 }
