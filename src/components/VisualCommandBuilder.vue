@@ -24,58 +24,49 @@
       <!-- Palette -->
       <div class="palette">
         <h3>Блоки</h3>
-        <div class="palette-section">
-          <h4>Опции</h4>
-          <div
-            v-for="option in availableOptions"
-            :key="option.type"
-            class="palette-item"
-            draggable="true"
-            @dragstart="onDragStart($event, option)"
-          >
-            <div class="palette-item-icon">{{ option.icon }}</div>
-            <div class="palette-item-label">{{ option.label }}</div>
-          </div>
+        <div class="palette-tabs">
+          <button :class="['palette-tab', {active: paletteTab==='options'}]" @click="paletteTab='options'">Опции</button>
+          <button :class="['palette-tab', {active: paletteTab==='actions'}]" @click="paletteTab='actions'">Действия</button>
+          <button :class="['palette-tab', {active: paletteTab==='conditions'}]" @click="paletteTab='conditions'">Условия</button>
         </div>
-
-        <div class="palette-section">
-          <h4>Действия</h4>
-          <div
-            v-for="action in availableActions"
-            :key="action.type"
-            class="palette-item"
-            draggable="true"
-            @dragstart="onDragStart($event, action)"
-          >
-            <div class="palette-item-icon">{{ action.icon }}</div>
-            <div class="palette-item-label">{{ action.label }}</div>
-          </div>
-        </div>
-
-        <div class="palette-section">
-          <h4>Условия</h4>
-          <div
-            v-for="condition in availableConditions"
-            :key="condition.type"
-            class="palette-item"
-            draggable="true"
-            @dragstart="onDragStart($event, condition)"
-          >
-            <div class="palette-item-icon">{{ condition.icon }}</div>
-            <div class="palette-item-label">{{ condition.label }}</div>
-          </div>
-        </div>
-
-        <!-- Validation Status -->
-        <div class="validation-status">
-          <h4>Статус схемы</h4>
-          <div v-if="validationErrors.length > 0" class="validation-errors">
-            <div v-for="error in validationErrors" :key="error" class="error-item">
-              ⚠️ {{ error }}
+        <div class="palette-scroll">
+          <template v-if="paletteTab==='options'">
+            <div class="palette-section">
+              <h4>Опции</h4>
+              <div v-for="option in availableOptions" :key="option.type" class="palette-item" draggable="true" @dragstart="onDragStart($event, option)">
+                <div class="palette-item-icon">{{ option.icon }}</div>
+                <div class="palette-item-label">{{ option.label }}</div>
+              </div>
             </div>
-          </div>
-          <div v-else class="validation-success">
-            ✅ Схема корректна
+          </template>
+          <template v-else-if="paletteTab==='actions'">
+            <div class="palette-section">
+              <h4>Действия</h4>
+              <div v-for="action in availableActions" :key="action.type" class="palette-item" draggable="true" @dragstart="onDragStart($event, action)">
+                <div class="palette-item-icon">{{ action.icon }}</div>
+                <div class="palette-item-label">{{ action.label }}</div>
+              </div>
+            </div>
+          </template>
+          <template v-else>
+            <div class="palette-section">
+              <h4>Условия</h4>
+              <div v-for="condition in availableConditions" :key="condition.type" class="palette-item" draggable="true" @dragstart="onDragStart($event, condition)">
+                <div class="palette-item-icon">{{ condition.icon }}</div>
+                <div class="palette-item-label">{{ condition.label }}</div>
+              </div>
+            </div>
+          </template>
+          <div class="validation-status">
+            <h4>Статус схемы</h4>
+            <div v-if="validationErrors.length > 0" class="validation-errors">
+              <div v-for="error in validationErrors" :key="error" class="error-item">
+                ⚠️ {{ error }}
+              </div>
+            </div>
+            <div v-else class="validation-success">
+              ✅ Схема корректна
+            </div>
           </div>
         </div>
       </div>
@@ -568,6 +559,7 @@ const selectedNode = ref(null)
 const showPreview = ref(false)
 const previewTab = ref('yaml')
 const menuOpen = ref(false)
+const paletteTab = ref('actions')
 
 // History for undo/redo
 const history = ref([])
@@ -1172,29 +1164,58 @@ saveToHistory()
   width: 280px;
   background: #2d2d2d;
   border-right: 1px solid #404040;
-  padding: 1rem;
-  overflow-y: auto;
+  padding: 1rem 0 1rem 0;
+  overflow: hidden;
   flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
 }
-
-.palette h3 {
-  margin: 0 0 1rem 0;
-  font-size: 1.125rem;
+.palette-tabs {
+  display: flex;
+  margin-bottom: 0.5rem;
+  border-bottom: 2px solid #444;
+}
+.palette-tab {
+  flex: 1;
+  background: none;
+  border: none;
+  color: #ccc;
+  font-size: 1.05rem;
   font-weight: 600;
-  color: #e5e7eb;
+  padding: 0.7rem 0;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: color 0.15s, border-color 0.15s;
 }
-
+.palette-tab.active {
+  color: #fff;
+  border-bottom: 2px solid #e84c4c;
+  background: #23272b;
+}
+.palette-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 1.2rem 0 1.2rem;
+  scrollbar-width: thin;
+  scrollbar-color: #3b82f6 #23272b;
+}
+.palette-scroll::-webkit-scrollbar {
+  width: 8px;
+  background: #23272b;
+}
+.palette-scroll::-webkit-scrollbar-thumb {
+  background: #3b82f6;
+  border-radius: 6px;
+}
 .palette-section {
-  margin-bottom: 1.5rem;
+  margin-bottom: 2.2rem;
 }
-
 .palette-section h4 {
-  margin: 0 0 0.75rem 0;
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: #9ca3af;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 0.7rem;
+  margin-top: 1.2rem;
 }
 
 .palette-item {
