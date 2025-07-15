@@ -85,6 +85,7 @@
               :selected="props.selected"
               @update="updateNodeData"
               @delete="() => handleNodeDelete(props.id)"
+              @select="() => handleNodeSelect(props.id)"
             />
           </template>
         </VueFlow>
@@ -743,6 +744,11 @@ function handleNodeDelete(nodeId) {
   elements.value = elements.value.filter(el => el.id !== nodeId && (el.source !== nodeId && el.target !== nodeId))
   if (selectedNode.value && selectedNode.value.id === nodeId) selectedNode.value = null
   saveToHistory()
+}
+
+function handleNodeSelect(nodeId) {
+  const node = elements.value.find(el => el.id === nodeId)
+  if (node) selectedNode.value = node
 }
 
 const duplicateNode = () => {

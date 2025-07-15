@@ -69,10 +69,11 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['delete'])
+const emit = defineEmits(['delete', 'select'])
 const showMenu = ref(false)
 const menuStyle = ref({})
 function onContextMenu(e) {
+  emit('select') 
   showMenu.value = true
   menuStyle.value = { left: e.offsetX + 'px', top: e.offsetY + 'px' }
   document.addEventListener('click', closeMenu)
