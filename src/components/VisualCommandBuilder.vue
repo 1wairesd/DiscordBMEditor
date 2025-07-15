@@ -686,9 +686,10 @@ const getDefaultDataForType = (type) => {
   }
 }
 
-// Node interaction handlers
-const onNodeClick = (event, node) => {
-  selectedNode.value = node
+function onNodeClick(event, node) {
+  const found = elements.value.find(el => el.id === node.id)
+  if (found) selectedNode.value = found
+  else selectedNode.value = null
 }
 
 const onPaneClick = () => {
