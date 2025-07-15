@@ -1,6 +1,9 @@
 <template>
   <div class="command-editor">
     <h3>{{ isNew ? 'Создать команду' : 'Редактировать команду' }}</h3>
+    <div class="visual-editor">
+      <ReactFlow :nodes="nodes" :edges="edges" style="width:100%;height:400px;background:#23272b" />
+    </div>
     <form @submit.prevent="$emit('save', localCommand)">
       <label>Имя команды
         <input v-model="localCommand.name" required />
@@ -69,8 +72,10 @@
 </template>
 
 <script setup>
-import { reactive, watch } from 'vue';
+import { reactive, watch, ref } from 'vue';
 import ActionEditor from './ActionEditor.vue';
+import ReactFlow from 'reactflow';
+import 'reactflow/dist/style.css';
 const props = defineProps({
   command: Object,
   isNew: Boolean
@@ -98,6 +103,15 @@ function addCondition() {
   localCommand.conditions.push({ type: 'permission', role_id: '' });
 }
 function removeCondition(i) { localCommand.conditions.splice(i, 1); }
+const nodes = ref([
+  { id: '1', type: 'input', data: { label: 'Start' }, position: { x: 100, y: 50 } },
+  { id: '2', data: { label: 'Action: Send Message' }, position: { x: 300, y: 200 } },
+  { id: '3', data: { label: 'Condition: Permission' }, position: { x: 500, y: 100 } },
+]);
+const edges = ref([
+  { id: 'e1-2', source: '1', target: '2' },
+  { id: 'e2-3', source: '2', target: '3' },
+]);
 </script>
 
 <style scoped>
@@ -144,5 +158,12 @@ button[type="button"] {
 }
 button:hover {
   background: #4752c4;
+}
+.visual-editor {
+  margin-bottom: 24px;
+  background: #23272b;
+  border-radius: 10px;
+  padding: 10px;
+  min-height: 420px;
 }
 </style> 

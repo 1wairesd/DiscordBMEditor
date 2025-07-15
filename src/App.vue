@@ -1,16 +1,7 @@
 <template>
   <div class="layout">
     <aside class="sidebar">
-      <h2>{{ $t('editor.title') }}</h2>
-      <CommandList
-        :commands="commands"
-        :selectedIndex="selectedIndex"
-        @select="selectCommand"
-        @edit="editCommand"
-        @delete="deleteCommand"
-        @add="addCommand"
-        @clone="cloneCommand"
-      />
+      <SidebarBlocks />
     </aside>
     <main class="main">
       <header class="header">
@@ -30,6 +21,15 @@
               </ul>
             </transition>
           </div>
+          <button class="command-menu-btn" @click="toggleCommandMenu" :title="$t('editor.selectCommand')">
+            <span>📋</span>
+            <span class="command-menu-label">{{ $t('editor.commands') }}</span>
+          </button>
+          <CommandSelectMenu
+            :commands="commands"
+            :visible="showCommandMenu"
+            @select="selectCommandFromMenu"
+          />
           <button class="doc-btn" @click="openDoc" :title="$t('doc.label')">
             <img :src="wsLogo" alt="doc" class="doc-icon" />
             <span class="doc-label">{{ $t('doc.label') }}</span>
@@ -79,6 +79,8 @@ import axios from 'axios';
 import CommandList from './components/CommandList.vue';
 import CommandEditor from './components/CommandEditor.vue';
 import ModalSaved from './components/ModalSaved.vue';
+import SidebarBlocks from './components/SidebarBlocks.vue';
+import CommandSelectMenu from './components/CommandSelectMenu.vue';
 
 const { locale, t } = useI18n();
 const lang = ref(locale.value);
@@ -123,6 +125,16 @@ const editingIndex = ref(null);
 const isNewCommand = ref(false);
 const showModal = ref(false);
 const savedCode = ref('');
+const showCommandMenu = ref(false);
+
+function toggleCommandMenu() {
+  showCommandMenu.value = !showCommandMenu.value;
+}
+function selectCommandFromMenu(idx) {
+  selectedIndex.value = idx;
+  editingIndex.value = null;
+  showCommandMenu.value = false;
+}
 
 onMounted(async () => {
   if (!code) return;
@@ -199,7 +211,7 @@ async function saveEdits() {
 }
 </script>
 
-<style>
+<style scoped>
 body {
   font-family: system-ui, sans-serif;
   background: #181c20;
@@ -388,5 +400,24 @@ code {
   font-weight: 600;
   font-size: 1.08em;
   letter-spacing: 0.5px;
+}
+.command-menu-btn {
+  background: #5865f2;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-left: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.command-menu-btn:hover {
+  background: #4752c4;
+}
+.command-menu-label {
+  font-weight: 600;
 }
 </style> 
