@@ -4,6 +4,7 @@
     <div class="header">
       <h2>Визуальный редактор команд</h2>
       <div class="header-actions">
+        <button @click="createRootCommand" class="btn btn-success" v-if="!hasRootNode">Создать команду</button>
         <button @click="openCommandsModal" class="btn btn-info">Команды</button>
         <button @click="undo" :disabled="!canUndo" class="btn btn-secondary">↶ Отменить</button>
         <button @click="redo" :disabled="!canRedo" class="btn btn-secondary">↷ Повторить</button>
@@ -23,18 +24,18 @@
 
     <div class="main-content">
       <!-- Palette -->
-      <div class="palette">
+      <div class="palette" :class="{disabled: !hasRootNode}">
         <h3>Блоки</h3>
         <div class="palette-tabs">
-          <button :class="['palette-tab', {active: paletteTab==='options'}]" @click="paletteTab='options'">Опции</button>
-          <button :class="['palette-tab', {active: paletteTab==='actions'}]" @click="paletteTab='actions'">Действия</button>
-          <button :class="['palette-tab', {active: paletteTab==='conditions'}]" @click="paletteTab='conditions'">Условия</button>
+          <button :class="['palette-tab', {active: paletteTab==='options'}]" @click="paletteTab='options'" :disabled="!hasRootNode">Опции</button>
+          <button :class="['palette-tab', {active: paletteTab==='actions'}]" @click="paletteTab='actions'" :disabled="!hasRootNode">Действия</button>
+          <button :class="['palette-tab', {active: paletteTab==='conditions'}]" @click="paletteTab='conditions'" :disabled="!hasRootNode">Условия</button>
         </div>
         <div class="palette-scroll">
           <template v-if="paletteTab==='options'">
         <div class="palette-section">
           <h4>Опции</h4>
-              <div v-for="option in availableOptions" :key="option.type" class="palette-item" draggable="true" @dragstart="onDragStart($event, option)">
+              <div v-for="option in availableOptions" :key="option.type" class="palette-item" draggable="true" @dragstart="onDragStart($event, option)" :class="{inactive: !hasRootNode}" :draggable="hasRootNode">
             <div class="palette-item-icon">{{ option.icon }}</div>
             <div class="palette-item-label">{{ option.label }}</div>
           </div>
@@ -43,7 +44,7 @@
           <template v-else-if="paletteTab==='actions'">
         <div class="palette-section">
           <h4>Действия</h4>
-              <div v-for="action in availableActions" :key="action.type" class="palette-item" draggable="true" @dragstart="onDragStart($event, action)">
+              <div v-for="action in availableActions" :key="action.type" class="palette-item" draggable="true" @dragstart="onDragStart($event, action)" :class="{inactive: !hasRootNode}" :draggable="hasRootNode">
             <div class="palette-item-icon">{{ action.icon }}</div>
             <div class="palette-item-label">{{ action.label }}</div>
           </div>
@@ -52,7 +53,7 @@
           <template v-else>
         <div class="palette-section">
           <h4>Условия</h4>
-              <div v-for="condition in availableConditions" :key="condition.type" class="palette-item" draggable="true" @dragstart="onDragStart($event, condition)">
+              <div v-for="condition in availableConditions" :key="condition.type" class="palette-item" draggable="true" @dragstart="onDragStart($event, condition)" :class="{inactive: !hasRootNode}" :draggable="hasRootNode">
             <div class="palette-item-icon">{{ condition.icon }}</div>
             <div class="palette-item-label">{{ condition.label }}</div>
           </div>
@@ -91,7 +92,7 @@
       </div>
 
       <!-- Properties Sidebar -->
-      <div v-if="selectedNode" class="properties-sidebar">
+      <div v-if="selectedNode && hasRootNode" class="properties-sidebar">
         <div class="sidebar-header">
           <h3>Свойства блока</h3>
           <button @click="closeSidebar" class="btn-close">×</button>
@@ -599,13 +600,25 @@ const rootNode = {
 }
 
 // Vue Flow elements
-const elements = ref([rootNode])
-const selectedNodeIds = ref([ROOT_NODE_ID])
+const elements = ref([])
+const selectedNodeIds = ref([])
 const selectedNode = computed(() => elements.value.find(el => el.id === selectedNodeIds.value[0]))
 const showPreview = ref(false)
 const previewTab = ref('yaml')
 const menuOpen = ref(false)
 const paletteTab = ref('actions')
+const hasRootNode = computed(() => elements.value.some(el => el.id === ROOT_NODE_ID))
+
+function createRootCommand() {
+  if (!hasRootNode.value) {
+    elements.value = [{
+      ...rootNode,
+      data: { ...rootNode.data }
+    }]
+    selectedNodeIds.value = [ROOT_NODE_ID]
+    saveToHistory()
+  }
+}
 
 // History for undo/redo
 const history = ref([])
@@ -679,7 +692,9 @@ const onDragStart = (event, block) => {
   event.dataTransfer.effectAllowed = 'move'
 }
 
+// onDrop: запрещаем добавление блоков, если нет rootNode
 const onDrop = (event) => {
+  if (!hasRootNode.value) return;
   const blockData = JSON.parse(event.dataTransfer.getData('application/vueflow'))
   
   // Get the canvas element to calculate position
@@ -841,6 +856,11 @@ const deleteNode = () => {
       selectedNodeIds.value = [ROOT_NODE_ID];
     }
     saveToHistory();
+  } else if (selectedNode.value && selectedNode.value.id === ROOT_NODE_ID) {
+    // Удаляем rootNode — сбрасываем всё
+    elements.value = []
+    selectedNodeIds.value = []
+    saveToHistory()
   }
 }
 
@@ -1995,5 +2015,13 @@ function selectCommand(idx) {
 .modal-error {
   color: #ff4d4d;
   margin-bottom: 1rem;
+}
+.palette.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+.palette .palette-item.inactive {
+  opacity: 0.5;
+  pointer-events: none;
 }
 </style> 
