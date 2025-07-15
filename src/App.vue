@@ -27,8 +27,22 @@
         </button>
       </div>
 
-      <!-- Tab Content -->
       <div class="tab-content">
+        <!-- Sidebar with command list (only in JSON editor) -->
+        <div v-if="activeTab === 'json'" class="sidebar">
+          <div class="sidebar-title">Список команд</div>
+          <div class="command-list">
+            <div 
+              v-for="(command, idx) in commands" 
+              :key="command.name + idx"
+              :class="['command-list-item', { selected: idx === selectedCommandIndex }]"
+              @click="selectCommand(idx)"
+            >
+              {{ command.name || 'Без названия' }}
+            </div>
+          </div>
+        </div>
+
         <!-- JSON Editor Tab -->
         <div v-if="activeTab === 'json'" class="json-editor-tab">
           <div class="editor-container">
@@ -41,7 +55,12 @@
             </div>
 
             <div class="commands-list">
-              <div v-for="(command, index) in commands" :key="index" class="command-item">
+              <div 
+                v-for="(command, index) in commands" 
+                :key="index" 
+                class="command-item"
+                :ref="el => commandRefs[index] = el"
+              >
                 <div class="command-header">
                   <h3>{{ command.name || 'Без названия' }}</h3>
                   <div class="command-actions">
@@ -188,6 +207,7 @@
 </template>
 
 <script>
+import { ref, nextTick } from 'vue';
 import VisualCommandBuilder from './components/VisualCommandBuilder.vue'
 
 export default {
@@ -200,10 +220,22 @@ export default {
       activeTab: 'json',
       commands: [],
       lastSaved: null,
-      bytebinUrl: null
+      bytebinUrl: null,
+      selectedCommandIndex: null,
+      commandRefs: []
     }
   },
   methods: {
+    selectCommand(idx) {
+      this.selectedCommandIndex = idx;
+      // Прокрутка к выбранной команде
+      nextTick(() => {
+        const el = this.commandRefs[idx];
+        if (el && el.scrollIntoView) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      });
+    },
     addCommand() {
       this.commands.push({
         name: '',
@@ -389,7 +421,7 @@ body {
 .app-content {
   flex: 1;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   overflow: hidden;
 }
 
@@ -669,6 +701,43 @@ body {
 
 .visual-editor-tab {
   height: 100%;
+}
+
+.sidebar {
+  width: 220px;
+  background: #23272b;
+  border-right: 1.5px solid #23272b;
+  padding: 18px 8px 8px 8px;
+  box-sizing: border-box;
+  min-height: 100%;
+  float: left;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.sidebar-title {
+  color: #b9bbbe;
+  font-size: 1.05em;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+.command-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.command-list-item {
+  background: #2d2d2d;
+  color: #fff;
+  border-radius: 6px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 1em;
+  transition: background 0.2s;
+}
+.command-list-item.selected, .command-list-item:hover {
+  background: #3b82f6;
+  color: #fff;
 }
 
 /* Responsive adjustments */
