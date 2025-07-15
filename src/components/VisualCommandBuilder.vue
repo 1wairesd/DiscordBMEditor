@@ -80,8 +80,6 @@
             />
           </template>
           
-          <Controls />
-          <MiniMap />
           <Background />
         </VueFlow>
       </div>
@@ -348,11 +346,9 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import { VueFlow, useVueFlow, Background, MiniMap, Controls } from '@vue-flow/core'
+import { VueFlow, Background } from '@vue-flow/core'
 import '@vue-flow/core/dist/style.css'
 import '@vue-flow/core/dist/theme-default.css'
-import '@vue-flow/controls/dist/style.css'
-import '@vue-flow/minimap/dist/style.css'
 import CustomNode from './CustomNode.vue'
 
 // Register custom node type
@@ -389,14 +385,15 @@ const onDragStart = (event, block) => {
 const onDrop = (event) => {
   const blockData = JSON.parse(event.dataTransfer.getData('application/vueflow'))
   
-  // Get the VueFlow instance to access viewport
-  const { project } = useVueFlow()
+  // Get the canvas element to calculate position
+  const canvas = event.target.closest('.vue-flow')
+  const rect = canvas.getBoundingClientRect()
   
-  // Calculate position relative to the viewport
-  const position = project({
-    x: event.clientX,
-    y: event.clientY
-  })
+  // Calculate position relative to the canvas
+  const position = {
+    x: event.clientX - rect.left,
+    y: event.clientY - rect.top
+  }
   
   const newNode = {
     id: `node-${nodeIdCounter++}`,
