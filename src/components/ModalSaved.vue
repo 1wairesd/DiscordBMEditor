@@ -4,7 +4,10 @@
       <button class="close-btn" @click="close">×</button>
       <h2>Данные были сохранены.</h2>
       <p>Выполните эту команду на вашем сервере для применения изменений:</p>
-      <pre class="command">/discordbmv applyedits {{ code }}</pre>
+      <pre class="command" @click="copyCommand" :title="copied ? 'Скопировано!' : 'Кликните для копирования'">
+        /discordbmv applyedits {{ code }}
+        <span v-if="copied" class="copied">Скопировано!</span>
+      </pre>
       <p class="note">
         <b>Заметка:</b> после выполнения команды <code>applyedits</code>, вам нужно сгенерировать другой URL для продолжения работы над Данными.
       </p>
@@ -13,10 +16,16 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits } from 'vue';
+import { defineProps, defineEmits, ref } from 'vue';
 const props = defineProps({ visible: Boolean, code: String });
 const emit = defineEmits(['close']);
+const copied = ref(false);
 function close() { emit('close'); }
+async function copyCommand() {
+  await navigator.clipboard.writeText(`/discordbmv applyedits ${props.code}`);
+  copied.value = true;
+  setTimeout(() => copied.value = false, 1200);
+}
 </script>
 
 <style scoped>
@@ -33,8 +42,21 @@ function close() { emit('close'); }
 .command {
   background: #23272a; color: #8aff80; padding: 0.7em 1em; border-radius: 6px; font-size: 1.1em; margin: 1em 0;
   user-select: all;
+  cursor: pointer;
+  position: relative;
+}
+.command:hover {
+  background: #2e3338;
+  opacity: 0.95;
 }
 .note {
   color: #aaa; font-size: 0.95em; margin-top: 1.5em;
+}
+.copied {
+  color: #8aff80;
+  margin-left: 12px;
+  font-size: 0.95em;
+  font-weight: 500;
+  transition: opacity 0.2s;
 }
 </style> 
