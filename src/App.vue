@@ -16,14 +16,21 @@
       <header class="header">
         <h1>{{ $t('editor.title') }}</h1>
         <div class="header-controls">
-          <button class="lang-btn">
-            <span class="lang-label">🌐</span>
-            <select v-model="lang" @change="changeLang" class="lang-select">
-              <option value="en">EN</option>
-              <option value="ru">RU</option>
-            </select>
-          </button>
-          <button class="doc-btn" @click="openDoc" title="{{$t('doc.label')}}">
+          <div class="lang-dropdown" @click.outside="showLangMenu = false">
+            <button class="lang-btn" @click="toggleLangMenu">
+              <span class="lang-label">🌐</span>
+              <span class="lang-short">{{ lang.toUpperCase() }}</span>
+              <svg class="lang-arrow" width="16" height="16" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+            </button>
+            <transition name="fade">
+              <ul v-if="showLangMenu" class="lang-menu">
+                <li v-for="l in langList" :key="l.code" :class="{active: l.code === lang}" @click="selectLang(l.code)">
+                  {{ $t('langNames.' + l.code) }}
+                </li>
+              </ul>
+            </transition>
+          </div>
+          <button class="doc-btn" @click="openDoc" :title="$t('doc.label')">
             <img :src="wsLogo" alt="doc" class="doc-icon" />
             <span class="doc-label">{{ $t('doc.label') }}</span>
           </button>
@@ -73,11 +80,21 @@ import CommandList from './components/CommandList.vue';
 import CommandEditor from './components/CommandEditor.vue';
 import ModalSaved from './components/ModalSaved.vue';
 
-const { locale } = useI18n();
+const { locale, t } = useI18n();
 const lang = ref(locale.value);
-function changeLang() {
-  locale.value = lang.value;
-  localStorage.setItem('language', lang.value);
+const showLangMenu = ref(false);
+const langList = [
+  { code: 'en' },
+  { code: 'ru' }
+];
+function toggleLangMenu(e) {
+  showLangMenu.value = !showLangMenu.value;
+}
+function selectLang(code) {
+  lang.value = code;
+  locale.value = code;
+  localStorage.setItem('language', code);
+  showLangMenu.value = false;
 }
 function openDoc() {
   window.open('https://1wairesd.github.io/1wairesdIndustriesWiki/docs/intro', '_blank');
@@ -260,6 +277,10 @@ code {
   gap: 18px;
   margin-right: 18px;
 }
+.lang-dropdown {
+  position: relative;
+  display: inline-block;
+}
 .lang-btn {
   display: flex;
   align-items: center;
@@ -267,31 +288,64 @@ code {
   border: none;
   border-radius: 10px;
   box-shadow: 0 2px 8px #0003, 0 1.5px 0 #444 inset;
-  padding: 0 16px;
+  padding: 0 18px 0 12px;
   height: 44px;
   font-size: 1.1rem;
   color: #fff;
   cursor: pointer;
   transition: box-shadow 0.2s, background 0.2s;
   position: relative;
+  min-width: 70px;
+  gap: 8px;
 }
-.lang-btn:hover {
+.lang-btn:hover, .lang-btn:focus {
   box-shadow: 0 4px 16px #0005, 0 2px 0 #444 inset;
   background: linear-gradient(145deg, #2e3338 60%, #23272b 100%);
 }
 .lang-label {
   font-size: 1.3em;
-  margin-right: 8px;
 }
-.lang-select {
-  background: transparent;
+.lang-short {
+  font-weight: 600;
+  font-size: 1.08em;
+  letter-spacing: 0.5px;
+}
+.lang-arrow {
+  margin-left: 6px;
+  transition: transform 0.2s;
+}
+.lang-menu {
+  position: absolute;
+  top: 110%;
+  left: 0;
+  min-width: 170px;
+  background: #23272b;
+  border-radius: 10px;
+  box-shadow: 0 6px 24px #000a;
+  padding: 6px 0;
+  z-index: 100;
+  margin-top: 4px;
+  border: 1.5px solid #2e3338;
+}
+.lang-menu li {
+  padding: 10px 18px;
   color: #fff;
-  border: none;
-  font-size: 1.1rem;
-  outline: none;
-  padding: 4px 8px;
+  font-size: 1.08em;
   cursor: pointer;
-  appearance: none;
+  transition: background 0.15s, color 0.15s;
+  border-radius: 6px;
+  margin: 2px 6px;
+  text-align: left;
+}
+.lang-menu li.active, .lang-menu li:hover {
+  background: #5865f2;
+  color: #fff;
+}
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.18s;
+}
+.fade-enter-from, .fade-leave-to {
+  opacity: 0;
 }
 .doc-btn {
   display: flex;

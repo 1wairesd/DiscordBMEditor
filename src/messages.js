@@ -1,7 +1,7 @@
 export default {
   en: {
     editor: {
-      title: 'DiscordBM Editor',
+      title: 'DiscordBM',
       saveAll: 'Save all changes',
       openByLink: 'Open the editor by link like',
       loading: 'Loading data...',
@@ -20,10 +20,14 @@ export default {
     doc: {
       label: 'Documentation',
     },
+    langNames: {
+      en: 'English (EN)',
+      ru: 'Russian (RU)'
+    },
   },
   ru: {
     editor: {
-      title: 'DiscordBM Editor',
+      title: 'DiscordBM',
       saveAll: 'Сохранить все изменения',
       openByLink: 'Откройте редактор по ссылке вида',
       loading: 'Загрузка данных...',
@@ -41,6 +45,10 @@ export default {
     },
     doc: {
       label: 'Документация',
+    },
+    langNames: {
+      en: 'Английский (EN)',
+      ru: 'Русский (RU)'
     },
   },
 }; 
