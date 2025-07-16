@@ -86,6 +86,8 @@
               :data="props.data"
               :selected="props.selected"
               @update="updateNodeData"
+              @hover="onNodeHover"
+              @unhover="onNodeUnhover"
             />
           </template>
         </VueFlow>
@@ -929,6 +931,22 @@ function selectCommand(idx) {
   selectedNodeIds.value = [ROOT_NODE_ID]
   saveToHistory()
   showCommandsModal.value = false
+}
+
+const hoverNodeId = ref(null)
+const hoverNode = computed(() => elements.value.find(el => el.id === hoverNodeId.value))
+let hoverTimeout = null
+function onNodeHover(id) {
+  clearTimeout(hoverTimeout)
+  hoverNodeId.value = id
+}
+function onNodeUnhover(id) {
+  hoverTimeout = setTimeout(() => {
+    if (hoverNodeId.value === id) hoverNodeId.value = null
+  }, 200)
+}
+function clearHoverNode() {
+  hoverNodeId.value = null
 }
 </script>
 

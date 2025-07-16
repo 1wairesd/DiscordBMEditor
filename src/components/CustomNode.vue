@@ -1,5 +1,5 @@
 <template>
-  <div class="custom-node" :class="{ selected }">
+  <div class="custom-node" :class="{ selected }" @mouseenter="onHover" @mouseleave="onUnhover">
     <div class="node-header" :class="`type-${data.type}`">
       <div class="node-icon">{{ getIcon() }}</div>
       <div class="node-title" v-if="data.type === 'root'">{{ data.name || getDefaultName() }}</div>
@@ -66,6 +66,14 @@ const props = defineProps({
     default: false
   }
 })
+const emit = defineEmits(['hover', 'unhover'])
+
+function onHover() {
+  emit('hover', props.data.id)
+}
+function onUnhover() {
+  emit('unhover', props.data.id)
+}
 
 const getIcon = () => {
   switch (props.data.type) {
