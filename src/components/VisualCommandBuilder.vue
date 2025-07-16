@@ -493,9 +493,16 @@
             <div class="form-group">
               <label>Действия при неудаче:</label>
               <button @click="addFailAction" class="btn btn-secondary">+ Действие при неудаче</button>
-              <div v-for="(failAction, idx) in selectedNode.data.failActions || []" :key="idx" class="fail-action-block">
-                <div>{{ failAction.actionType }}</div>
-                <button @click="removeFailAction(idx)" class="btn btn-danger">Удалить</button>
+              <div v-for="(failAction, idx) in selectedNode.data.failActions || []" :key="idx" class="fail-action-block styled-fail-action">
+                <div class="fail-action-header">
+                  <span class="fail-action-icon">💬</span>
+                  <span class="fail-action-type">{{ getActionTypeLabel(failAction.actionType) }}</span>
+                  <button @click="removeFailAction(idx)" class="btn btn-danger btn-fail-action-remove">Удалить</button>
+                </div>
+                <div v-if="failAction.actionType === 'send_message'" class="fail-action-message">
+                  <label>Сообщение:</label>
+                  <input v-model="failAction.message" type="text" placeholder="Введите сообщение" class="form-input" @input="saveToHistory" />
+                </div>
               </div>
             </div>
           </div>
@@ -1167,6 +1174,22 @@ function removeFailAction(index) {
   const newFailActions = (selectedNode.value.data.failActions || []).filter((_, i) => i !== index);
   updateNodeData(selectedNode.value.id, { failActions: newFailActions });
   saveToHistory();
+}
+
+function getActionTypeLabel(type) {
+  const typeMap = {
+    'send_message': 'Отправить сообщение',
+    'send_to_channel': 'Отправить в канал',
+    'delete_message': 'Удалить сообщение',
+    'button': 'Кнопка',
+    'edit_component': 'Редактировать компонент',
+    'send_form': 'Форма',
+    'add_role': 'Добавить роль',
+    'resolve_placeholders': 'Разрешить плейсхолдеры',
+    'send_page': 'Отправить страницу',
+    'edit_message': 'Редактировать сообщение'
+  }
+  return typeMap[type] || type
 }
 </script>
 
@@ -1898,5 +1921,45 @@ function removeFailAction(index) {
 .topbar-actions {
   display: flex;
   gap: 0.7rem;
+}
+.styled-fail-action {
+  background: #23272b;
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin: 10px 0;
+  border: 1px solid #444;
+  box-shadow: 0 2px 8px #0002;
+}
+.fail-action-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+.fail-action-icon {
+  font-size: 1.2em;
+}
+.fail-action-type {
+  font-weight: 600;
+  color: #fff;
+  background: #3b82f6;
+  border-radius: 6px;
+  padding: 2px 10px;
+  font-size: 0.95em;
+}
+.btn-fail-action-remove {
+  margin-left: auto;
+  font-size: 0.9em;
+  padding: 2px 8px;
+}
+.fail-action-message label {
+  font-size: 0.95em;
+  color: #bbb;
+  margin-bottom: 2px;
+  display: block;
+}
+.fail-action-message input {
+  width: 100%;
+  margin-top: 2px;
 }
 </style> 
