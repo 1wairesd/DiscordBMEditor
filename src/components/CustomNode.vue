@@ -153,6 +153,11 @@ const getConditionTypeLabel = () => {
   cursor: grabbing;
 }
 
+.custom-node,
+.custom-node * {
+  border-radius: 0 !important;
+}
+
 .node-header {
   display: flex;
   align-items: flex-start;
