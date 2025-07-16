@@ -602,15 +602,24 @@ let EmojiMartPicker = null
 let emojiMartData = null
 
 async function openEmojiPicker(event) {
-  if (!emojiButtonRef.value) return;
-  if (!selectedNode.value || !('message' in selectedNode.value.data)) return;
+  console.log('openEmojiPicker called');
+  if (!emojiButtonRef.value) {
+    console.warn('emojiButtonRef.value is null');
+    return;
+  }
+  if (!selectedNode.value || !('message' in selectedNode.value.data)) {
+    console.warn('selectedNode invalid', selectedNode.value);
+    return;
+  }
   if (!EmojiMartPicker) {
+    console.log('Importing EmojiMartPicker and data...');
     const [Picker, data] = await Promise.all([
       import('@emoji-mart/react').then(mod => mod.default),
       import('@emoji-mart/data').then(mod => mod.default)
     ])
     EmojiMartPicker = Picker
     emojiMartData = data
+    console.log('EmojiMartPicker:', EmojiMartPicker, 'emojiMartData:', emojiMartData);
   }
   // Позиционируем popover относительно кнопки
   const rect = emojiButtonRef.value.getBoundingClientRect()
@@ -619,6 +628,7 @@ async function openEmojiPicker(event) {
     left: rect.left + window.scrollX
   }
   showEmojiPicker.value = true
+  console.log('showEmojiPicker set to true, position:', emojiPickerPosition.value);
 }
 
 function onEmojiSelectMart(emoji) {
