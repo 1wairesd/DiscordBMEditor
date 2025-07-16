@@ -6,6 +6,7 @@
         DiscordBM Editor
       </div>
       <div class="topbar-actions">
+        <button v-if="!hasRootNode" @click="createRootCommand" class="btn btn-success">Создать команду</button>
         <button @click="openCommandsModal" class="btn btn-info">Команды</button>
         <button @click="undo" :disabled="!canUndo" class="btn btn-secondary">↶ Отменить</button>
         <button @click="redo" :disabled="!canRedo" class="btn btn-secondary">↷ Повторить</button>
