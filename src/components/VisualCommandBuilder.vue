@@ -491,7 +491,6 @@
           <!-- Common Actions -->
           <div class="form-actions">
             <button @click="deleteNode" class="btn btn-danger">Удалить</button>
-            <button @click="duplicateNode" class="btn btn-secondary">Дублировать</button>
           </div>
         </div>
       </div>
@@ -850,27 +849,6 @@ const deleteNode = () => {
     // Удаляем rootNode — сбрасываем всё
     elements.value = []
     selectedNodeIds.value = []
-    saveToHistory()
-  }
-}
-
-const duplicateNode = () => {
-  if (selectedNode.value) {
-    const originalNode = selectedNode.value
-    const newNode = {
-      id: `node-${nodeIdCounter++}`,
-      type: 'custom',
-      position: {
-        x: originalNode.position.x + 200,
-        y: originalNode.position.y + 100
-      },
-      data: {
-        ...originalNode.data,
-        name: `${originalNode.data.name} (копия)`
-      }
-    }
-    elements.value.push(newNode)
-    selectedNodeIds.value = [newNode.id]
     saveToHistory()
   }
 }

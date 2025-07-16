@@ -14,7 +14,6 @@
         <div class="cmd-icons">
           <button class="edit" @click.stop="$emit('edit', idx)">✏️</button>
           <button class="delete" @click.stop="$emit('delete', idx)">🗑️</button>
-          <button class="clone" @click.stop="$emit('clone', idx)">📋</button>
         </div>
       </li>
     </ul>
@@ -27,7 +26,7 @@ const props = defineProps({
   commands: Array,
   selectedIndex: Number
 });
-const emit = defineEmits(['select', 'edit', 'delete', 'add', 'clone']);
+const emit = defineEmits(['select', 'edit', 'delete', 'add']);
 const search = ref('');
 const filteredCommands = computed(() => {
   if (!search.value) return props.commands;
