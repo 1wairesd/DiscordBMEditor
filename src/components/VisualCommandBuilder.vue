@@ -213,7 +213,7 @@
                   <span v-else style="color:#10b981;">✔️</span>
                 </button>
                 <button 
-                  ref="emojiButtonRef"
+                  :ref="emojiButtonRef"
                   type="button" 
                   @click="openEmojiPicker" 
                   style="position:absolute;top:8px;right:8px;width:28px;height:28px;background:transparent;border:none;color:#ccc;font-size:18px;cursor:pointer;"
@@ -598,30 +598,32 @@ let emojiPopup = null;
 const emojiButtonRef = ref(null);
 
 function openEmojiPicker() {
-  if (!emojiButtonRef.value) return;
-  if (!selectedNode.value || !('message' in selectedNode.value.data)) return;
-  if (!emojiPopup) {
-    import('@picmo/popup-picker').then(({ createPopup }) => {
-      emojiPopup = createPopup({
-        triggerElement: emojiButtonRef.value,
-        theme: 'dark',
-        locale: 'ru',
-        showPreview: true,
-        showRecents: true,
-        focusSearch: true,
-        onEmojiSelect: (selection) => {
-          if (typeof selectedNode.value.data.message !== 'string') selectedNode.value.data.message = '';
-          selectedNode.value.data.message += selection.emoji;
-          saveToHistory();
-          emojiPopup.hide();
-        }
+  nextTick(() => {
+    if (!emojiButtonRef.value) return;
+    if (!selectedNode.value || !('message' in selectedNode.value.data)) return;
+    if (!emojiPopup) {
+      import('@picmo/popup-picker').then(({ createPopup }) => {
+        emojiPopup = createPopup({
+          triggerElement: emojiButtonRef.value,
+          theme: 'dark',
+          locale: 'ru',
+          showPreview: true,
+          showRecents: true,
+          focusSearch: true,
+          onEmojiSelect: (selection) => {
+            if (typeof selectedNode.value.data.message !== 'string') selectedNode.value.data.message = '';
+            selectedNode.value.data.message += selection.emoji;
+            saveToHistory();
+            emojiPopup.hide();
+          }
+        });
+        emojiPopup.show();
       });
-      emojiPopup.show();
-    });
-  } else {
-    emojiPopup.triggerElement = emojiButtonRef.value;
-    emojiPopup.toggle();
-  }
+    } else {
+      emojiPopup.triggerElement = emojiButtonRef.value;
+      emojiPopup.toggle();
+    }
+  });
 }
 
 // Register custom node type
