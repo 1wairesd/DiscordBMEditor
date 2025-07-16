@@ -2029,4 +2029,18 @@ onBeforeUnmount(() => {
   width: 100%;
   margin-top: 2px;
 }
+.properties-sidebar::-webkit-scrollbar {
+  width: 8px;
+  background: #23272b;
+}
+.properties-sidebar::-webkit-scrollbar-thumb {
+  background: #444;
+  border-radius: 6px;
+}
+.properties-sidebar::-webkit-scrollbar-thumb:hover {
+  background: #3b82f6;
+}
+.properties-sidebar::-webkit-scrollbar-track {
+  background: #23272b;
+}
 </style> 
