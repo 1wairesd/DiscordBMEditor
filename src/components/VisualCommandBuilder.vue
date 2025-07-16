@@ -185,18 +185,7 @@
 
             <div class="form-group">
               <label>Тип действия:</label>
-              <select v-model="selectedNode.data.actionType" class="form-select" @change="saveToHistory">
-                <option value="send_message">Отправить сообщение</option>
-                <option value="send_to_channel">Отправить в канал</option>
-                <option value="delete_message">Удалить сообщение</option>
-                <option value="button">Кнопка</option>
-                <option value="edit_component">Редактировать компонент</option>
-                <option value="send_form">Форма</option>
-                <option value="add_role">Добавить роль</option>
-                <option value="resolve_placeholders">Разрешить плейсхолдеры</option>
-                <option value="send_page">Отправить страницу</option>
-                <option value="edit_message">Редактировать сообщение</option>
-              </select>
+              <div class="form-input" style="background:#333;cursor:default;user-select:none;">{{ getActionTypeLabel(selectedNode.data.actionType) }}</div>
             </div>
 
             <div v-if="selectedNode.data.actionType === 'send_message'" class="form-group">
@@ -754,7 +743,7 @@ const onDrop = (event) => {
       type: blockData.type,
       name: `Новый ${blockData.label}`,
       description: '',
-      ...getDefaultDataForType(blockData.type)
+      ...getDefaultDataForType(blockData.type, blockData)
     }
   }
   
@@ -763,7 +752,7 @@ const onDrop = (event) => {
   saveToHistory()
 }
 
-const getDefaultDataForType = (type) => {
+const getDefaultDataForType = (type, blockData = {}) => {
   switch (type) {
     case 'option':
       return {
@@ -772,7 +761,7 @@ const getDefaultDataForType = (type) => {
       }
     case 'action':
       return {
-        actionType: 'send_message',
+        actionType: blockData.actionType || getActionTypeByLabel(blockData.label),
         message: '',
         response_type: 'REPLY',
         label: '',
@@ -807,6 +796,23 @@ const getDefaultDataForType = (type) => {
     default:
       return {}
   }
+}
+
+// Добавить функцию для сопоставления label -> actionType:
+function getActionTypeByLabel(label) {
+  const map = {
+    'Отправить сообщение': 'send_message',
+    'Отправить в канал': 'send_to_channel',
+    'Удалить сообщение': 'delete_message',
+    'Кнопка': 'button',
+    'Редактировать компонент': 'edit_component',
+    'Форма': 'send_form',
+    'Добавить роль': 'add_role',
+    'Разрешить плейсхолдеры': 'resolve_placeholders',
+    'Отправить страницу': 'send_page',
+    'Редактировать сообщение': 'edit_message'
+  }
+  return map[label] || 'send_message';
 }
 
 // Node interaction handlers
