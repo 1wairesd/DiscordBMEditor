@@ -1051,6 +1051,15 @@ saveToHistory()
 
 // Удаление по клавише Delete/Backspace
 function handleKeydown(e) {
+  // Если Backspace и не в textarea/input — ничего не делаем
+  if (e.key === 'Backspace') {
+    // Проверяем, не в textarea или input ли фокус
+    const tag = document.activeElement && document.activeElement.tagName;
+    if (tag !== 'TEXTAREA' && tag !== 'INPUT') {
+      e.preventDefault();
+      return;
+    }
+  }
   if (e.key === 'Delete' && selectedNode.value) {
     // Запретить удаление rootNode
     if (selectedNode.value.id === ROOT_NODE_ID) return;
