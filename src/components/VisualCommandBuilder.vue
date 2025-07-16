@@ -1451,7 +1451,6 @@ onBeforeUnmount(() => {
   padding: 24px 24px 24px 24px;
   box-sizing: border-box;
   overflow-y: auto;
-  transition: width 0.15s;
 }
 .sidebar-resizer {
   width: 6px;
