@@ -2182,3 +2182,21 @@ function copyMessage(msg) {
   background: #23272b;
 }
 </style> 
+
+<Teleport to="body">
+  <div v-if="showEmojiPicker" :id="'emoji-mart-popover'" :style="{position:'absolute',zIndex:2000,top:emojiPickerPosition.top+'px',left:emojiPickerPosition.left+'px'}">
+    <div style="color:#fff;background:#222;padding:2px 8px;">[LOG] showEmojiPicker: {{ showEmojiPicker }}, EmojiMartPicker: {{ !!EmojiMartPicker }}, emojiMartData: {{ !!emojiMartData }}</div>
+    <div style="color:yellow;background:#333;padding:4px 8px;margin-bottom:4px;">[TEST] Popover открыт!</div>
+    <component
+      :is="EmojiMartPicker"
+      v-if="EmojiMartPicker && emojiMartData"
+      :data="emojiMartData"
+      :onEmojiSelect="onEmojiSelectMart"
+      theme="dark"
+      locale="ru"
+      previewPosition="none"
+      perLine="8"
+      style="box-shadow:0 4px 32px #0008;border-radius:12px;"
+    />
+  </div>
+</Teleport>
