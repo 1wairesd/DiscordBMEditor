@@ -1048,7 +1048,7 @@ saveToHistory()
 
 // Удаление по клавише Delete/Backspace
 function handleKeydown(e) {
-  if ((e.key === 'Delete' || e.key === 'Backspace') && selectedNode.value) {
+  if (e.key === 'Delete' && selectedNode.value) {
     // Запретить удаление rootNode
     if (selectedNode.value.id === ROOT_NODE_ID) return;
     deleteNode();
