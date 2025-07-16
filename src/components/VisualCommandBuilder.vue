@@ -2,7 +2,7 @@
   <div class="visual-command-builder">
     <div class="topbar">
       <div class="topbar-title">
-        <img src="@/assets/ws_logo.png" alt="WS Logo" class="topbar-logo" />
+        <img src="src/assets/ws_logo.png" alt="WS Logo" class="topbar-logo" />
         DiscordBM Editor
       </div>
       <div class="topbar-actions">
