@@ -85,8 +85,10 @@
         </VueFlow>
       </div>
 
+      <!-- Resizer -->
+      <div v-if="selectedNode && hasRootNode" class="sidebar-resizer" @mousedown="startResizeSidebar"></div>
       <!-- Properties Sidebar -->
-      <div v-if="selectedNode && hasRootNode" class="properties-sidebar" :key="selectedNode?.id">
+      <div v-if="selectedNode && hasRootNode" class="properties-sidebar" :style="{ width: sidebarWidth + 'px' }" :key="selectedNode?.id">
         <div class="sidebar-header">
           <h3>Свойства блока</h3>
           <button @click="closeSidebar" class="btn-close">×</button>
@@ -1213,6 +1215,36 @@ function getActionTypeLabel(type) {
   }
   return typeMap[type] || type
 }
+
+const sidebarWidth = ref(380)
+let resizingSidebar = false
+let startX = 0
+let startWidth = 0
+function startResizeSidebar(e) {
+  resizingSidebar = true
+  startX = e.clientX
+  startWidth = sidebarWidth.value
+  document.body.style.cursor = 'ew-resize'
+  window.addEventListener('mousemove', onResizeSidebar)
+  window.addEventListener('mouseup', stopResizeSidebar)
+}
+function onResizeSidebar(e) {
+  if (!resizingSidebar) return
+  const dx = startX - e.clientX
+  let newWidth = startWidth + dx
+  newWidth = Math.max(280, Math.min(800, newWidth))
+  sidebarWidth.value = newWidth
+}
+function stopResizeSidebar() {
+  resizingSidebar = false
+  document.body.style.cursor = ''
+  window.removeEventListener('mousemove', onResizeSidebar)
+  window.removeEventListener('mouseup', stopResizeSidebar)
+}
+onBeforeUnmount(() => {
+  window.removeEventListener('mousemove', onResizeSidebar)
+  window.removeEventListener('mouseup', stopResizeSidebar)
+})
 </script>
 
 <style scoped>
@@ -1411,14 +1443,28 @@ function getActionTypeLabel(type) {
 }
 
 .properties-sidebar {
-  width: 320px;
-  background: #2d2d2d;
+  width: 380px;
+  min-width: 280px;
+  max-width: 800px;
+  background: #23272b;
   border-left: 1px solid #404040;
-  display: flex;
-  flex-direction: column;
-  flex-shrink: 0;
+  padding: 24px 24px 24px 24px;
+  box-sizing: border-box;
+  overflow-y: auto;
+  transition: width 0.15s;
 }
-
+.sidebar-resizer {
+  width: 6px;
+  cursor: ew-resize;
+  background: #23272b;
+  border-left: 1px solid #444;
+  border-right: 1px solid #444;
+  z-index: 10;
+  transition: background 0.15s;
+}
+.sidebar-resizer:hover {
+  background: #3b82f6;
+}
 .sidebar-header {
   display: flex;
   justify-content: space-between;
