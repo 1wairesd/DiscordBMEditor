@@ -213,8 +213,9 @@
                   <span v-else style="color:#10b981;">✔️</span>
                 </button>
                 <button 
+                  ref="emojiButtonRef"
                   type="button" 
-                  @click="openEmojiPicker($event)" 
+                  @click="openEmojiPicker" 
                   style="position:absolute;top:8px;right:8px;width:28px;height:28px;background:transparent;border:none;color:#ccc;font-size:18px;cursor:pointer;"
                   title="Эмодзи"
                 >😊</button>
@@ -594,13 +595,13 @@ import axios from 'axios'
 // --- PicMo emoji picker ---
 let emojiPopup = null;
 
-function openEmojiPicker(event) {
-  if (!event || !event.target) return;
+function openEmojiPicker() {
+  if (!emojiButtonRef.value) return;
   if (!selectedNode.value || !('message' in selectedNode.value.data)) return;
   if (!emojiPopup) {
     import('@picmo/popup-picker').then(({ createPopup }) => {
       emojiPopup = createPopup({
-        triggerElement: event.target,
+        triggerElement: emojiButtonRef.value,
         theme: 'dark',
         locale: 'ru',
         showPreview: true,
@@ -616,7 +617,7 @@ function openEmojiPicker(event) {
       emojiPopup.show();
     });
   } else {
-    emojiPopup.triggerElement = event.target;
+    emojiPopup.triggerElement = emojiButtonRef.value;
     emojiPopup.toggle();
   }
 }
