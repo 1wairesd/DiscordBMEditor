@@ -190,15 +190,31 @@
 
             <div v-if="selectedNode.data.actionType === 'send_message'" class="form-group">
               <label>Сообщение:</label>
-              <textarea 
-                v-model="selectedNode.data.message" 
-                placeholder="Введите сообщение"
-                class="form-textarea"
-                rows="3"
-                :ref="el => setTextareaRef(el, selectedNode.id, 'message')"
-                @mouseup="onTextareaResize(selectedNode.id, 'message')"
-                @input="saveToHistory"
-              ></textarea>
+              <div style="position:relative;">
+                <textarea 
+                  v-model="selectedNode.data.message" 
+                  placeholder="Введите сообщение"
+                  class="form-textarea"
+                  rows="3"
+                  :ref="el => setTextareaRef(el, selectedNode.id, 'message')"
+                  @mouseup="onTextareaResize(selectedNode.id, 'message')"
+                  @input="saveToHistory"
+                  style="padding-right:70px;"
+                ></textarea>
+                <button 
+                  type="button" 
+                  @click="copyMessage(selectedNode.data.message)" 
+                  style="position:absolute;top:8px;right:38px;width:28px;height:28px;background:transparent;border:none;color:#ccc;font-size:18px;cursor:pointer;"
+                  title="Скопировать"
+                >📋</button>
+                <button 
+                  type="button" 
+                  @click="openEmojiPicker()" 
+                  style="position:absolute;top:8px;right:8px;width:28px;height:28px;background:transparent;border:none;color:#ccc;font-size:18px;cursor:pointer;"
+                  title="Эмодзи"
+                >😊</button>
+                <div style="position:absolute;right:8px;bottom:4px;font-size:12px;color:#aaa;">{{ (selectedNode.data.message || '').length }}/2000</div>
+              </div>
               <label>Тип ответа:</label>
               <select v-model="selectedNode.data.response_type" class="form-select" @change="saveToHistory">
                 <option value="REPLY">Ответ (REPLY)</option>
@@ -1280,6 +1296,15 @@ function onTextareaResize(nodeId, field) {
   if (el) {
     localStorage.setItem('discordbm-textarea-' + nodeId + '-' + field, el.offsetHeight)
   }
+}
+function copyMessage(msg) {
+  if (!msg) return;
+  navigator.clipboard.writeText(msg).then(() => {
+    // Можно добавить уведомление
+  });
+}
+function openEmojiPicker() {
+  alert('Эмодзи!'); // Заглушка, можно интегрировать emoji picker
 }
 </script>
 
