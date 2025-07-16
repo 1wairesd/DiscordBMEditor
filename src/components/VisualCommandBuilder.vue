@@ -96,12 +96,12 @@
       <!-- Properties Sidebar -->
       <!-- Удаляем старую боковую панель -->
       
-      <!-- Floating Properties Panel -->
+      <!-- Floating Properties Panel по hoverNode -->
       <FloatingPanel
-        v-if="selectedNode && hasRootNode"
-        :node="selectedNode"
+        v-if="hoverNodeId && hoverNode"
+        :node="hoverNode"
         :canvasSelector="'.canvas-container'"
-        @close="closeSidebar"
+        @close="clearHoverNode"
         @updateNodeData="updateNodeData"
         @deleteNode="deleteNode"
         @duplicateNode="duplicateNode"
