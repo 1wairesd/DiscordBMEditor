@@ -1,5 +1,11 @@
 <template>
   <div id="app">
+    <!-- Кликабельный логотип и текст -->
+    <a href="https://1wairesd.github.io/1wairesdIndustriesWiki/docs/DiscordBM/DiscordBMEditor/dscordbmeditor-main" 
+       target="_blank" rel="noopener" class="header-logo-link" style="margin: 16px 0 0 24px;">
+      <img src="/1wairesdIndistries.png" alt="Logo" class="header-logo" />
+      <span class="header-title">DiscordBM Editor</span>
+    </a>
     <!-- Удалить header-шапку, если есть, чтобы не было дублирования. -->
     <SaveModal v-if="showSaveModal" :bytebin-key="bytebinUrl" @close="showSaveModal = false" />
 
@@ -219,5 +225,25 @@ body {
 .btn-lg {
   font-size: 1.25rem;
   padding: 0.75rem 2.5rem;
+}
+
+.header-logo-link {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}
+.header-logo-link:hover .header-title {
+  text-decoration: underline;
+}
+.header-logo {
+  height: 28px;
+  margin-right: 8px;
+}
+.header-title {
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
 }
 </style> 
