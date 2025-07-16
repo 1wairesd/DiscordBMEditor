@@ -66,6 +66,7 @@
           :node-types="nodeTypes"
           :connection-line-style="{ stroke: '#3b82f6', strokeWidth: 2 }"
           :connection-mode="ConnectionMode.Loose"
+          :deleteKeyCode="'Delete'"
           class="canvas"
           @connect="onConnect"
           @pane-click="onPaneClick"
@@ -1048,29 +1049,6 @@ const downloadPreview = () => {
 
 // Initialize history
 saveToHistory()
-
-// Удаление по клавише Delete/Backspace
-function handleKeydown(e) {
-  const tag = document.activeElement && document.activeElement.tagName;
-  if (e.key === 'Backspace') {
-    // Если фокус не в input/textarea — полностью блокируем Backspace
-    if (tag !== 'TEXTAREA' && tag !== 'INPUT') {
-      e.preventDefault();
-      e.stopImmediatePropagation();
-      return;
-    }
-  }
-  if (e.key === 'Delete' && selectedNode.value) {
-    // Разрешаем удалять rootNode тоже
-    deleteNode();
-  }
-}
-onMounted(() => {
-  window.addEventListener('keydown', handleKeydown)
-})
-onBeforeUnmount(() => {
-  window.removeEventListener('keydown', handleKeydown)
-})
 
 const showCommandsModal = ref(false)
 const commands = ref([])
