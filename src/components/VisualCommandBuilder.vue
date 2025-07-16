@@ -549,7 +549,7 @@ import '@vue-flow/core/dist/style.css'
 import '@vue-flow/core/dist/theme-default.css'
 import CustomNode from './CustomNode.vue'
 import axios from 'axios'
-import wsLogo from '@/assets/ws_photo.png'
+import wsLogo from '@/assets/ws_logo.png'
 
 // Register custom node type
 const nodeTypes = {
