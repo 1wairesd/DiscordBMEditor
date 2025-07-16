@@ -493,6 +493,12 @@
             <button @click="duplicateNode" class="btn btn-secondary">Дублировать</button>
           </div>
         </div>
+        <div v-if="logs.length" style="margin-top:2rem;">
+          <h4 style="margin-bottom:0.5rem;">Логи:</h4>
+          <ul style="font-size:0.9em; color:#aaa; max-height:120px; overflow:auto;">
+            <li v-for="(log, i) in logs" :key="i">{{ log }}</li>
+          </ul>
+        </div>
       </div>
 
       <!-- Command Preview Modal -->
@@ -608,6 +614,8 @@ const previewTab = ref('yaml')
 const menuOpen = ref(false)
 const paletteTab = ref('actions')
 const hasRootNode = computed(() => elements.value.some(el => el.id === ROOT_NODE_ID))
+
+const logs = ref([])
 
 function createRootCommand() {
   if (!hasRootNode.value) {
@@ -781,8 +789,8 @@ const getDefaultDataForType = (type) => {
 const onNodeClick = (event, node) => {
   // node.id — id выделенного блока
   if (elements.value.find(el => el.id === node.id)) {
-    // Всегда обновляем, даже если выбран тот же id
     selectedNodeIds.value = [node.id]
+    logs.value.push(`Выбран блок: ${node.data?.name || node.id} (${node.data?.type || ''})`)
   }
 }
 
