@@ -213,7 +213,7 @@
                   <span v-else style="color:#10b981;">✔️</span>
                 </button>
                 <button 
-                  :ref="emojiButtonRef"
+                  :ref="el => emojiButtonRef.value = el"
                   type="button" 
                   @click="openEmojiPicker"
                   style="position:absolute;top:8px;right:8px;width:28px;height:28px;background:transparent;border:none;color:#ccc;font-size:18px;cursor:pointer;"
@@ -604,6 +604,9 @@ let emojiMartData = null
 async function openEmojiPicker(event) {
   console.log('openEmojiPicker called');
   await nextTick();
+  console.log('emojiButtonRef:', emojiButtonRef);
+  console.log('emojiButtonRef.value:', emojiButtonRef.value);
+  console.log('All emoji buttons:', document.querySelectorAll('button[title="Эмодзи"]'));
   if (!emojiButtonRef.value) {
     console.warn('emojiButtonRef.value is null');
     return;
