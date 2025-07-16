@@ -198,8 +198,9 @@
                   rows="3"
                   :ref="el => setTextareaRef(el, selectedNode.id, 'message')"
                   @mouseup="onTextareaResize(selectedNode.id, 'message')"
-                  @input="saveToHistory"
+                  @input="onMessageInput"
                   style="padding-right:70px;"
+                  maxlength="2000"
                 ></textarea>
                 <button 
                   type="button" 
@@ -1306,6 +1307,14 @@ function copyMessage(msg) {
 function openEmojiPicker() {
   alert('Эмодзи!'); // Заглушка, можно интегрировать emoji picker
 }
+function onMessageInput(e) {
+  if (selectedNode.value && selectedNode.value.data && typeof selectedNode.value.data.message === 'string') {
+    if (selectedNode.value.data.message.length > 2000) {
+      selectedNode.value.data.message = selectedNode.value.data.message.slice(0, 2000);
+    }
+    saveToHistory();
+  }
+}
 </script>
 
 <style scoped>
@@ -2111,6 +2120,21 @@ function openEmojiPicker() {
   background: #3b82f6;
 }
 .properties-sidebar::-webkit-scrollbar-track {
+  background: #23272b;
+}
+.form-textarea::-webkit-scrollbar {
+  width: 10px;
+  background: #23272b;
+  border-radius: 8px;
+}
+.form-textarea::-webkit-scrollbar-thumb {
+  background: #444;
+  border-radius: 8px;
+}
+.form-textarea::-webkit-scrollbar-thumb:hover {
+  background: #3b82f6;
+}
+.form-textarea::-webkit-scrollbar-track {
   background: #23272b;
 }
 </style> 
