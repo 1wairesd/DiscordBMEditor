@@ -2142,14 +2142,14 @@ function onMessageInput(e) {
 .copied-toast {
   position: fixed;
   left: 50%;
-  bottom: 32px;
+  bottom: 100px;
   transform: translateX(-50%);
   background: #22c55e;
   color: #fff;
   padding: 12px 32px;
   border-radius: 8px;
-  font-size: 1.1rem;
-  font-weight: 600;
+  font-size: 1.25rem;
+  font-weight: 700;
   box-shadow: 0 2px 16px #0005;
   z-index: 9999;
   animation: fadein 0.2s, fadeout 0.3s 1.2s;
