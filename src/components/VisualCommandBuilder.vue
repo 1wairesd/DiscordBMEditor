@@ -1051,12 +1051,12 @@ saveToHistory()
 
 // Удаление по клавише Delete/Backspace
 function handleKeydown(e) {
-  // Если Backspace и не в textarea/input — ничего не делаем
+  // Если Backspace и не в textarea/input — полностью блокируем (даже для VueFlow)
   if (e.key === 'Backspace') {
-    // Проверяем, не в textarea или input ли фокус
     const tag = document.activeElement && document.activeElement.tagName;
     if (tag !== 'TEXTAREA' && tag !== 'INPUT') {
       e.preventDefault();
+      e.stopImmediatePropagation();
       return;
     }
   }
