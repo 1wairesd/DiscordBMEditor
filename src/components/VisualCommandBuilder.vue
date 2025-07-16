@@ -856,8 +856,8 @@ const onConnect = (params) => {
 
 // Sidebar handlers
 const closeSidebar = () => {
-  // Не сбрасываем выделение, чтобы всегда был выбран rootNode
-  selectedNodeIds.value = [ROOT_NODE_ID]
+  // Сбросить выделение — скрыть правую панель
+  selectedNodeIds.value = []
 }
 
 const updateNodeData = (nodeId, newData) => {
