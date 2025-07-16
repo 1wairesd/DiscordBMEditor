@@ -606,12 +606,12 @@ async function openEmojiPicker(event) {
   if (!emojiButtonRef.value) return;
   if (!selectedNode.value || !('message' in selectedNode.value.data)) return;
   if (!EmojiMartPicker) {
-    const [{ Picker }, data] = await Promise.all([
-      import('@emoji-mart/react'),
-      import('@emoji-mart/data')
+    const [Picker, data] = await Promise.all([
+      import('@emoji-mart/react').then(mod => mod.default),
+      import('@emoji-mart/data').then(mod => mod.default)
     ])
     EmojiMartPicker = Picker
-    emojiMartData = data.default
+    emojiMartData = data
   }
   // Позиционируем popover относительно кнопки
   const rect = emojiButtonRef.value.getBoundingClientRect()
