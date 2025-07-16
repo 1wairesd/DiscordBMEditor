@@ -603,6 +603,7 @@ let emojiMartData = null
 
 async function openEmojiPicker(event) {
   console.log('openEmojiPicker called');
+  await nextTick();
   if (!emojiButtonRef.value) {
     console.warn('emojiButtonRef.value is null');
     return;
