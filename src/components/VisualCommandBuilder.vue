@@ -10,7 +10,7 @@
         <button @click="openCommandsModal" class="btn btn-info">Команды</button>
         <button @click="undo" :disabled="!canUndo" class="btn btn-secondary">↶ Отменить</button>
         <button @click="redo" :disabled="!canRedo" class="btn btn-secondary">↷ Повторить</button>
-        <button @click="openSaveModal" class="btn btn-success">Сохранить</button>
+        <button @click="$emit('save')" class="btn btn-success">Сохранить</button>
       </div>
     </div>
 

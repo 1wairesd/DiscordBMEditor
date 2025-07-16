@@ -7,7 +7,7 @@
 
     <div class="main-area">
       <div class="visual-editor-tab visual-editor-full">
-        <VisualCommandBuilder />
+        <VisualCommandBuilder @save="openSaveModal" />
       </div>
     </div>
 
