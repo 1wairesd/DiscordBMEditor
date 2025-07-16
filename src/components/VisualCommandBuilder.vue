@@ -215,7 +215,7 @@
                 <button 
                   :ref="emojiButtonRef"
                   type="button" 
-                  @click="openEmojiPicker" 
+                  @click="openEmojiPicker"
                   style="position:absolute;top:8px;right:8px;width:28px;height:28px;background:transparent;border:none;color:#ccc;font-size:18px;cursor:pointer;"
                   title="Эмодзи"
                 >😊</button>
@@ -586,52 +586,64 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue'
+import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick, Teleport } from 'vue'
 import { VueFlow, ConnectionMode } from '@vue-flow/core'
 import '@vue-flow/core/dist/style.css'
 import '@vue-flow/core/dist/theme-default.css'
 import CustomNode from './CustomNode.vue'
 import axios from 'axios'
-import '@picmo/popup-picker/dist/picmo.css'
-// --- PicMo emoji picker ---
-let emojiPopup = null;
+import { shallowRef, onMounted as vueOnMounted, onBeforeUnmount as vueOnBeforeUnmount } from 'vue'
+import { Picker } from '@emoji-mart/react'
+import data from '@emoji-mart/data'
 
-const emojiButtonRef = ref(null);
+const emojiButtonRef = ref(null)
+const showEmojiPicker = ref(false)
+const emojiPickerPosition = ref({ top: 0, left: 0 })
+let EmojiMartPicker = null
+let emojiMartData = null
 
-function openEmojiPicker() {
-  nextTick(() => {
-    try {
-      if (!emojiButtonRef.value) return;
-      if (!selectedNode.value || !('message' in selectedNode.value.data)) return;
-      if (!emojiPopup) {
-        import('@picmo/popup-picker').then(({ createPopup }) => {
-          emojiPopup = createPopup({
-            triggerElement: emojiButtonRef.value,
-            theme: 'dark',
-            locale: 'ru',
-            showPreview: true,
-            showRecents: true,
-            focusSearch: true,
-            onEmojiSelect: (selection) => {
-              if (typeof selectedNode.value.data.message !== 'string') selectedNode.value.data.message = '';
-              selectedNode.value.data.message += selection.emoji;
-              saveToHistory();
-              emojiPopup.hide();
-            }
-          });
-          emojiPopup.show();
-        }).catch(e => {
-          console.error('PicMo import error:', e);
-        });
-      } else {
-        emojiPopup.triggerElement = emojiButtonRef.value;
-        emojiPopup.toggle();
-      }
-    } catch (e) {
-      console.error('openEmojiPicker error:', e);
-    }
-  });
+async function openEmojiPicker(event) {
+  if (!emojiButtonRef.value) return;
+  if (!selectedNode.value || !('message' in selectedNode.value.data)) return;
+  if (!EmojiMartPicker) {
+    const [{ Picker }, data] = await Promise.all([
+      import('@emoji-mart/react'),
+      import('@emoji-mart/data')
+    ])
+    EmojiMartPicker = Picker
+    emojiMartData = data.default
+  }
+  // Позиционируем popover относительно кнопки
+  const rect = emojiButtonRef.value.getBoundingClientRect()
+  emojiPickerPosition.value = {
+    top: rect.bottom + window.scrollY + 6,
+    left: rect.left + window.scrollX
+  }
+  showEmojiPicker.value = true
 }
+
+function onEmojiSelectMart(emoji) {
+  if (!selectedNode.value || !('message' in selectedNode.value.data)) return;
+  if (typeof selectedNode.value.data.message !== 'string') selectedNode.value.data.message = '';
+  selectedNode.value.data.message += emoji.native;
+  saveToHistory();
+  showEmojiPicker.value = false;
+}
+
+function closeEmojiPickerOnClickOutside(e) {
+  if (!showEmojiPicker.value) return;
+  const picker = document.getElementById('emoji-mart-popover');
+  if (picker && !picker.contains(e.target) && !emojiButtonRef.value.contains(e.target)) {
+    showEmojiPicker.value = false;
+  }
+}
+
+vueOnMounted(() => {
+  document.addEventListener('mousedown', closeEmojiPickerOnClickOutside)
+})
+vueOnBeforeUnmount(() => {
+  document.removeEventListener('mousedown', closeEmojiPickerOnClickOutside)
+})
 
 // Register custom node type
 const nodeTypes = {
