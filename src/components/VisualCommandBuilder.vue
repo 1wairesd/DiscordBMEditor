@@ -86,6 +86,7 @@
               :data="props.data"
               :selected="props.selected"
               @update="updateNodeData"
+              @node-click="onNodeClick($event, props)"
             />
           </template>
         </VueFlow>

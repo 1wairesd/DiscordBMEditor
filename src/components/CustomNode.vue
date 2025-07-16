@@ -1,5 +1,5 @@
 <template>
-  <div class="custom-node" :class="{ selected }">
+  <div class="custom-node" :class="{ selected }" @click="$emit('node-click', data)">
     <div class="node-header" :class="`type-${data.type}`">
       <div class="node-icon">{{ getIcon() }}</div>
       <div class="node-title" v-if="data.type === 'root'">{{ data.name || getDefaultName() }}</div>
