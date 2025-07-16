@@ -84,10 +84,8 @@
           <template #node-custom="props">
             <CustomNode
               :data="props.data"
-              :isSelected="props.selected"
-              :nodeId="props.id"
+              :selected="props.selected"
               @update="updateNodeData"
-              @select="onNodeSelect"
             />
           </template>
         </VueFlow>
@@ -1320,12 +1318,6 @@ function selectCommand(idx) {
   selectedNodeIds.value = [ROOT_NODE_ID]
   saveToHistory()
   showCommandsModal.value = false
-}
-
-function onNodeSelect(nodeId) {
-  if (elements.value.find(el => el.id === nodeId)) {
-    selectedNodeIds.value = [nodeId];
-  }
 }
 </script>
 
