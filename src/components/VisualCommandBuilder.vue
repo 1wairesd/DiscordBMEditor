@@ -213,7 +213,7 @@
                   <span v-else style="color:#10b981;">✔️</span>
                 </button>
                 <button 
-                  :ref="el => emojiButtonRef.value = el"
+                  :ref="el => emojiButtonEl = el"
                   type="button" 
                   @click="openEmojiPicker"
                   style="position:absolute;top:8px;right:8px;width:28px;height:28px;background:transparent;border:none;color:#ccc;font-size:18px;cursor:pointer;"
@@ -595,7 +595,7 @@ import axios from 'axios'
 import { shallowRef, onMounted as vueOnMounted, onBeforeUnmount as vueOnBeforeUnmount } from 'vue'
 import data from '@emoji-mart/data'
 
-const emojiButtonRef = ref(null)
+let emojiButtonEl = null
 const showEmojiPicker = ref(false)
 const emojiPickerPosition = ref({ top: 0, left: 0 })
 let EmojiMartPicker = null
@@ -604,11 +604,9 @@ let emojiMartData = null
 async function openEmojiPicker(event) {
   console.log('openEmojiPicker called');
   await nextTick();
-  console.log('emojiButtonRef:', emojiButtonRef);
-  console.log('emojiButtonRef.value:', emojiButtonRef.value);
-  console.log('All emoji buttons:', document.querySelectorAll('button[title="Эмодзи"]'));
-  if (!emojiButtonRef.value) {
-    console.warn('emojiButtonRef.value is null');
+  console.log('emojiButtonEl:', emojiButtonEl);
+  if (!emojiButtonEl) {
+    console.warn('emojiButtonEl is null');
     return;
   }
   if (!selectedNode.value || !('message' in selectedNode.value.data)) {
@@ -626,7 +624,7 @@ async function openEmojiPicker(event) {
     console.log('EmojiMartPicker:', EmojiMartPicker, 'emojiMartData:', emojiMartData);
   }
   // Позиционируем popover относительно кнопки
-  const rect = emojiButtonRef.value.getBoundingClientRect()
+  const rect = emojiButtonEl.getBoundingClientRect()
   emojiPickerPosition.value = {
     top: rect.bottom + window.scrollY + 6,
     left: rect.left + window.scrollX
@@ -646,7 +644,7 @@ function onEmojiSelectMart(emoji) {
 function closeEmojiPickerOnClickOutside(e) {
   if (!showEmojiPicker.value) return;
   const picker = document.getElementById('emoji-mart-popover');
-  if (picker && !picker.contains(e.target) && !emojiButtonRef.value.contains(e.target)) {
+  if (picker && !picker.contains(e.target) && !emojiButtonEl.contains(e.target)) {
     showEmojiPicker.value = false;
   }
 }
