@@ -207,7 +207,10 @@
                   @click="copyMessage(selectedNode.data.message)" 
                   style="position:absolute;top:8px;right:38px;width:28px;height:28px;background:transparent;border:none;color:#ccc;font-size:18px;cursor:pointer;"
                   title="Скопировать"
-                >📋</button>
+                >
+                  <span v-if="!copySuccess">📋</span>
+                  <span v-else style="color:#10b981;">✔️</span>
+                </button>
                 <button 
                   type="button" 
                   @click="openEmojiPicker()" 
@@ -577,7 +580,6 @@
         </ul>
       </div>
     </div>
-    <div v-if="showCopiedToast" class="copied-toast">Скопировано!</div>
   </div>
 </template>
 
@@ -1302,8 +1304,8 @@ function onTextareaResize(nodeId, field) {
 function copyMessage(msg) {
   if (!msg) return;
   navigator.clipboard.writeText(msg).then(() => {
-    showCopiedToast.value = true;
-    setTimeout(() => showCopiedToast.value = false, 1500);
+    copySuccess.value = true;
+    setTimeout(() => copySuccess.value = false, 1000);
   });
 }
 function openEmojiPicker() {
@@ -2138,28 +2140,5 @@ function onMessageInput(e) {
 }
 .form-textarea::-webkit-scrollbar-track {
   background: #23272b;
-}
-.copied-toast {
-  position: fixed;
-  left: 50%;
-  bottom: 100px;
-  transform: translateX(-50%);
-  background: #22c55e;
-  color: #fff;
-  padding: 12px 32px;
-  border-radius: 8px;
-  font-size: 1.25rem;
-  font-weight: 700;
-  box-shadow: 0 2px 16px #0005;
-  z-index: 9999;
-  animation: fadein 0.2s, fadeout 0.3s 1.2s;
-}
-@keyframes fadein {
-  from { opacity: 0; transform: translateX(-50%) translateY(20px); }
-  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
-}
-@keyframes fadeout {
-  from { opacity: 1; }
-  to   { opacity: 0; }
 }
 </style> 
