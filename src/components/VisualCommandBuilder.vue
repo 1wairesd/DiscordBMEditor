@@ -593,7 +593,6 @@ import '@vue-flow/core/dist/theme-default.css'
 import CustomNode from './CustomNode.vue'
 import axios from 'axios'
 import { shallowRef, onMounted as vueOnMounted, onBeforeUnmount as vueOnBeforeUnmount } from 'vue'
-import { Picker } from '@emoji-mart/react'
 import data from '@emoji-mart/data'
 
 const emojiButtonRef = ref(null)
