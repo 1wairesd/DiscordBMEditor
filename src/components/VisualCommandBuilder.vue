@@ -214,7 +214,7 @@
                 </button>
                 <button 
                   type="button" 
-                  @click="openEmojiPicker()" 
+                  @click="openEmojiPicker($event)" 
                   style="position:absolute;top:8px;right:8px;width:28px;height:28px;background:transparent;border:none;color:#ccc;font-size:18px;cursor:pointer;"
                   title="Эмодзи"
                 >😊</button>
@@ -595,6 +595,7 @@ import axios from 'axios'
 let emojiPopup = null;
 
 function openEmojiPicker(event) {
+  if (!event || !event.target) return;
   if (!selectedNode.value || !('message' in selectedNode.value.data)) return;
   if (!emojiPopup) {
     import('@picmo/popup-picker').then(({ createPopup }) => {
