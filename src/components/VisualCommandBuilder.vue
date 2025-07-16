@@ -1,13 +1,13 @@
 <template>
   <div class="visual-command-builder">
-    <!-- Header -->
-    <div class="header">
-      <h2>Визуальный редактор команд</h2>
-      <div class="header-actions">
-        <button @click="createRootCommand" class="btn btn-success" v-if="!hasRootNode">Создать команду</button>
+    <!-- Верхняя шапка -->
+    <div class="topbar">
+      <span class="logo">DiscordBM Editor</span>
+      <div class="topbar-actions">
         <button @click="openCommandsModal" class="btn btn-info">Команды</button>
         <button @click="undo" :disabled="!canUndo" class="btn btn-secondary">↶ Отменить</button>
         <button @click="redo" :disabled="!canRedo" class="btn btn-secondary">↷ Повторить</button>
+        <button class="btn btn-success">Сохранить</button>
       </div>
     </div>
 
@@ -1113,6 +1113,25 @@ function createRootCommand() {
   flex-direction: column;
   background: #1a1a1a;
   color: #ffffff;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1.5rem;
+  background: #23272b;
+  border-bottom: 1px solid #404040;
+}
+.logo {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #fff;
+}
+.topbar-actions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
 }
 
 .header {
