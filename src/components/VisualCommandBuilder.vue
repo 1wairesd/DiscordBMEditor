@@ -212,37 +212,6 @@
                   <span v-if="!copySuccess">📋</span>
                   <span v-else style="color:#10b981;">✔️</span>
                 </button>
-                <button 
-                  :ref="el => emojiButtonEl = el"
-                  type="button" 
-                  @click="openEmojiPicker"
-                  style="position:absolute;top:8px;right:8px;width:28px;height:28px;background:transparent;border:none;color:#ccc;font-size:18px;cursor:pointer;"
-                  title="Эмодзи"
-                >😊</button>
-                <Teleport to="body">
-                  <div v-if="showEmojiPicker" :id="'emoji-mart-popover'"
-                    :style="{
-                      position: 'absolute',
-                      zIndex: 2000,
-                      top: emojiPickerPosition.top + 'px',
-                      left: emojiPickerPosition.left + 'px',
-                      background: '#23272b',
-                      borderRadius: '12px',
-                      boxShadow: '0 4px 32px #0008',
-                      padding: '8px',
-                      width: '340px',
-                      maxHeight: '400px',
-                      overflow: 'auto',
-                      border: '1px solid #444'
-                    }"
-                  >
-                    <EmojiPicker
-                      @select="onEmojiSelectVue3"
-                      theme="dark"
-                      style="width: 320px; max-height: 360px; background: #23272b; border-radius: 10px;"
-                    />
-                  </div>
-                </Teleport>
                 <div style="position:absolute;right:8px;bottom:4px;font-size:12px;color:#aaa;">{{ (selectedNode.data.message || '').length }}/2000</div>
               </div>
               <label>Тип ответа:</label>
@@ -618,7 +587,6 @@ import CustomNode from './CustomNode.vue'
 import axios from 'axios'
 import { shallowRef, onMounted as vueOnMounted, onBeforeUnmount as vueOnBeforeUnmount } from 'vue'
 import data from '@emoji-mart/data'
-import EmojiPicker from 'vue3-emoji-picker'
 
 let emojiButtonEl = null
 const showEmojiPicker = ref(false)
@@ -638,14 +606,6 @@ async function openEmojiPicker(event) {
   }
   showEmojiPicker.value = true
   console.log('showEmojiPicker set to true, position:', emojiPickerPosition.value);
-}
-
-function onEmojiSelectVue3(emoji) {
-  if (!selectedNode.value || !('message' in selectedNode.value.data)) return;
-  if (typeof selectedNode.value.data.message !== 'string') selectedNode.value.data.message = '';
-  selectedNode.value.data.message += emoji.i || emoji;
-  saveToHistory();
-  showEmojiPicker.value = false;
 }
 
 function closeEmojiPickerOnClickOutside(e) {
