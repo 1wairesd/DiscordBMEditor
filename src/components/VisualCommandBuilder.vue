@@ -216,8 +216,9 @@
               </div>
               <label>Тип ответа:</label>
               <select v-model="selectedNode.data.response_type" class="form-select" @change="saveToHistory">
-                <option value="REPLY">Ответ (REPLY)</option>
+                <option value="reply">Ответ (REPLY)</option>
                 <option value="edit_message">Редактировать сообщение</option>
+                <option value="random_reply">Рандомный ответ</option>
               </select>
               <label>Метка:</label>
               <input 
