@@ -220,9 +220,27 @@
                   title="Эмодзи"
                 >😊</button>
                 <Teleport to="body">
-                  <div v-if="showEmojiPicker" :id="'emoji-mart-popover'" :style="{position:'absolute',zIndex:2000,top:emojiPickerPosition.top+'px',left:emojiPickerPosition.left+'px'}">
-                    <div style="color:yellow;background:#333;padding:4px 8px;margin-bottom:4px;">[TEST] Popover открыт!</div>
-                    <EmojiPicker @select="onEmojiSelectVue3" theme="dark" />
+                  <div v-if="showEmojiPicker" :id="'emoji-mart-popover'"
+                    :style="{
+                      position: 'absolute',
+                      zIndex: 2000,
+                      top: emojiPickerPosition.top + 'px',
+                      left: emojiPickerPosition.left + 'px',
+                      background: '#23272b',
+                      borderRadius: '12px',
+                      boxShadow: '0 4px 32px #0008',
+                      padding: '8px',
+                      width: '340px',
+                      maxHeight: '400px',
+                      overflow: 'auto',
+                      border: '1px solid #444'
+                    }"
+                  >
+                    <EmojiPicker
+                      @select="onEmojiSelectVue3"
+                      theme="dark"
+                      style="width: 320px; max-height: 360px; background: #23272b; border-radius: 10px;"
+                    />
                   </div>
                 </Teleport>
                 <div style="position:absolute;right:8px;bottom:4px;font-size:12px;color:#aaa;">{{ (selectedNode.data.message || '').length }}/2000</div>
