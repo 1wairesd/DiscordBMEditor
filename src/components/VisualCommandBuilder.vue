@@ -592,6 +592,7 @@ import '@vue-flow/core/dist/style.css'
 import '@vue-flow/core/dist/theme-default.css'
 import CustomNode from './CustomNode.vue'
 import axios from 'axios'
+import '@picmo/popup-picker/dist/picmo.css'
 // --- PicMo emoji picker ---
 let emojiPopup = null;
 
@@ -599,29 +600,35 @@ const emojiButtonRef = ref(null);
 
 function openEmojiPicker() {
   nextTick(() => {
-    if (!emojiButtonRef.value) return;
-    if (!selectedNode.value || !('message' in selectedNode.value.data)) return;
-    if (!emojiPopup) {
-      import('@picmo/popup-picker').then(({ createPopup }) => {
-        emojiPopup = createPopup({
-          triggerElement: emojiButtonRef.value,
-          theme: 'dark',
-          locale: 'ru',
-          showPreview: true,
-          showRecents: true,
-          focusSearch: true,
-          onEmojiSelect: (selection) => {
-            if (typeof selectedNode.value.data.message !== 'string') selectedNode.value.data.message = '';
-            selectedNode.value.data.message += selection.emoji;
-            saveToHistory();
-            emojiPopup.hide();
-          }
+    try {
+      if (!emojiButtonRef.value) return;
+      if (!selectedNode.value || !('message' in selectedNode.value.data)) return;
+      if (!emojiPopup) {
+        import('@picmo/popup-picker').then(({ createPopup }) => {
+          emojiPopup = createPopup({
+            triggerElement: emojiButtonRef.value,
+            theme: 'dark',
+            locale: 'ru',
+            showPreview: true,
+            showRecents: true,
+            focusSearch: true,
+            onEmojiSelect: (selection) => {
+              if (typeof selectedNode.value.data.message !== 'string') selectedNode.value.data.message = '';
+              selectedNode.value.data.message += selection.emoji;
+              saveToHistory();
+              emojiPopup.hide();
+            }
+          });
+          emojiPopup.show();
+        }).catch(e => {
+          console.error('PicMo import error:', e);
         });
-        emojiPopup.show();
-      });
-    } else {
-      emojiPopup.triggerElement = emojiButtonRef.value;
-      emojiPopup.toggle();
+      } else {
+        emojiPopup.triggerElement = emojiButtonRef.value;
+        emojiPopup.toggle();
+      }
+    } catch (e) {
+      console.error('openEmojiPicker error:', e);
     }
   });
 }
