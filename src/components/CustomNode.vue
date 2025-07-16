@@ -1,5 +1,5 @@
 <template>
-  <div class="custom-node" :class="{ selected }" @mouseenter="onHover" @mouseleave="onUnhover">
+  <div class="custom-node" :class="{ selected }">
     <div class="node-header" :class="`type-${data.type}`">
       <div class="node-icon">{{ getIcon() }}</div>
       <div class="node-title" v-if="data.type === 'root'">{{ data.name || getDefaultName() }}</div>
@@ -66,14 +66,6 @@ const props = defineProps({
     default: false
   }
 })
-const emit = defineEmits(['hover', 'unhover'])
-
-function onHover() {
-  emit('hover', props.data.id)
-}
-function onUnhover() {
-  emit('unhover', props.data.id)
-}
 
 const getIcon = () => {
   switch (props.data.type) {
@@ -146,6 +138,7 @@ const getConditionTypeLabel = () => {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   transition: all 0.2s ease;
   position: relative;
+  cursor: pointer;
 }
 
 .custom-node.selected {
