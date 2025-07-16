@@ -138,12 +138,18 @@ const getConditionTypeLabel = () => {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   transition: all 0.2s ease;
   position: relative;
-  cursor: pointer;
 }
 
 .custom-node.selected {
   border-color: #3b82f6;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2), 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.custom-node:hover {
+  cursor: grab;
+}
+.custom-node:active {
+  cursor: grabbing;
 }
 
 .node-header {

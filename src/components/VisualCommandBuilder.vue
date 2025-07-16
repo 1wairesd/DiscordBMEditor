@@ -1470,7 +1470,6 @@ function selectCommand(idx) {
   background: #404040;
   border: 1px solid #525252;
   border-radius: 8px;
-  cursor: grab;
   transition: all 0.2s ease;
 }
 
@@ -1481,7 +1480,6 @@ function selectCommand(idx) {
 }
 
 .palette-item:active {
-  cursor: grabbing;
 }
 
 .palette-item-icon {
@@ -1512,6 +1510,10 @@ function selectCommand(idx) {
   background-image: 
     radial-gradient(circle at 25% 25%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
     radial-gradient(circle at 75% 75%, rgba(16, 185, 129, 0.1) 0%, transparent 50%);
+}
+
+.canvas, .canvas-container, :deep(.vue-flow__pane) {
+  cursor: default !important;
 }
 
 .properties-sidebar {
