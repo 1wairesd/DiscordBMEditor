@@ -595,6 +595,8 @@ import axios from 'axios'
 // --- PicMo emoji picker ---
 let emojiPopup = null;
 
+const emojiButtonRef = ref(null);
+
 function openEmojiPicker() {
   if (!emojiButtonRef.value) return;
   if (!selectedNode.value || !('message' in selectedNode.value.data)) return;
