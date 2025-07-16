@@ -577,6 +577,7 @@
         </ul>
       </div>
     </div>
+    <div v-if="showCopiedToast" class="copied-toast">Скопировано!</div>
   </div>
 </template>
 
@@ -1301,7 +1302,8 @@ function onTextareaResize(nodeId, field) {
 function copyMessage(msg) {
   if (!msg) return;
   navigator.clipboard.writeText(msg).then(() => {
-    // Можно добавить уведомление
+    showCopiedToast.value = true;
+    setTimeout(() => showCopiedToast.value = false, 1500);
   });
 }
 function openEmojiPicker() {
@@ -2136,5 +2138,28 @@ function onMessageInput(e) {
 }
 .form-textarea::-webkit-scrollbar-track {
   background: #23272b;
+}
+.copied-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 32px;
+  transform: translateX(-50%);
+  background: #22c55e;
+  color: #fff;
+  padding: 12px 32px;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  box-shadow: 0 2px 16px #0005;
+  z-index: 9999;
+  animation: fadein 0.2s, fadeout 0.3s 1.2s;
+}
+@keyframes fadein {
+  from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+@keyframes fadeout {
+  from { opacity: 1; }
+  to   { opacity: 0; }
 }
 </style> 
