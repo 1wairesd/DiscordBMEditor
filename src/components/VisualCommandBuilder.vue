@@ -221,19 +221,8 @@
                 >😊</button>
                 <Teleport to="body">
                   <div v-if="showEmojiPicker" :id="'emoji-mart-popover'" :style="{position:'absolute',zIndex:2000,top:emojiPickerPosition.top+'px',left:emojiPickerPosition.left+'px'}">
-                    <div style="color:#fff;background:#222;padding:2px 8px;">[LOG] showEmojiPicker: {{ showEmojiPicker }}, EmojiMartPicker: {{ !!EmojiMartPicker }}, emojiMartData: {{ !!emojiMartData }}</div>
                     <div style="color:yellow;background:#333;padding:4px 8px;margin-bottom:4px;">[TEST] Popover открыт!</div>
-                    <component
-                      :is="EmojiMartPicker"
-                      v-if="EmojiMartPicker && emojiMartData"
-                      :data="emojiMartData"
-                      :onEmojiSelect="onEmojiSelectMart"
-                      theme="dark"
-                      locale="ru"
-                      previewPosition="none"
-                      perLine="8"
-                      style="box-shadow:0 4px 32px #0008;border-radius:12px;"
-                    />
+                    <EmojiPicker @select="onEmojiSelectVue3" theme="dark" />
                   </div>
                 </Teleport>
                 <div style="position:absolute;right:8px;bottom:4px;font-size:12px;color:#aaa;">{{ (selectedNode.data.message || '').length }}/2000</div>
@@ -611,12 +600,11 @@ import CustomNode from './CustomNode.vue'
 import axios from 'axios'
 import { shallowRef, onMounted as vueOnMounted, onBeforeUnmount as vueOnBeforeUnmount } from 'vue'
 import data from '@emoji-mart/data'
+import EmojiPicker from 'vue3-emoji-picker'
 
 let emojiButtonEl = null
 const showEmojiPicker = ref(false)
 const emojiPickerPosition = ref({ top: 0, left: 0 })
-let EmojiMartPicker = null
-let emojiMartData = null
 
 async function openEmojiPicker(event) {
   console.log('openEmojiPicker called');
@@ -630,30 +618,14 @@ async function openEmojiPicker(event) {
     console.warn('selectedNode invalid', selectedNode.value);
     return;
   }
-  if (!EmojiMartPicker) {
-    console.log('Importing EmojiMartPicker and data...');
-    const [Picker, data] = await Promise.all([
-      import('@emoji-mart/react').then(mod => mod.default),
-      import('@emoji-mart/data').then(mod => mod.default)
-    ])
-    EmojiMartPicker = Picker
-    emojiMartData = data
-    console.log('EmojiMartPicker:', EmojiMartPicker, 'emojiMartData:', emojiMartData);
-  }
-  // Позиционируем popover относительно кнопки
-  const rect = emojiButtonEl.getBoundingClientRect()
-  emojiPickerPosition.value = {
-    top: rect.bottom + window.scrollY + 6,
-    left: rect.left + window.scrollX
-  }
   showEmojiPicker.value = true
   console.log('showEmojiPicker set to true, position:', emojiPickerPosition.value);
 }
 
-function onEmojiSelectMart(emoji) {
+function onEmojiSelectVue3(emoji) {
   if (!selectedNode.value || !('message' in selectedNode.value.data)) return;
   if (typeof selectedNode.value.data.message !== 'string') selectedNode.value.data.message = '';
-  selectedNode.value.data.message += emoji.native;
+  selectedNode.value.data.message += emoji.i || emoji;
   saveToHistory();
   showEmojiPicker.value = false;
 }
