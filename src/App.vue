@@ -1,13 +1,6 @@
 <template>
   <div id="app">
-    <header class="app-header">
-      <div class="header-content">
-        <h1>DiscordBM Editor</h1>
-        <div class="header-actions modern-save">
-          <button @click="openSaveModal" class="btn modern-save-btn">Сохранить</button>
-        </div>
-      </div>
-    </header>
+    <!-- Удалить header-шапку, если есть, чтобы не было дублирования. -->
     <SaveModal v-if="showSaveModal" :bytebin-key="bytebinUrl" @close="showSaveModal = false" />
 
     <!-- Удалены tab-navigation и все, что связано с JSON редактором -->
