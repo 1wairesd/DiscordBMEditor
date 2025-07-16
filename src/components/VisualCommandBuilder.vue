@@ -677,13 +677,13 @@ onMounted(() => {
         }
         elements.value = loaded
       } else {
-        elements.value = [rootNode]
+        elements.value = [] // Нет rootNode по умолчанию
       }
     } catch (e) {
-      elements.value = [rootNode]
+      elements.value = [] // Нет rootNode по умолчанию
     }
   } else {
-    elements.value = [rootNode]
+    elements.value = [] // Нет rootNode по умолчанию
   }
   // Восстановить выделение
   const savedSelected = localStorage.getItem('discordbm-selected-node');
@@ -695,13 +695,13 @@ onMounted(() => {
       if (validIds.length > 0) {
         selectedNodeIds.value = validIds;
       } else {
-        selectedNodeIds.value = [ROOT_NODE_ID];
+        selectedNodeIds.value = [];
       }
     } catch {
-      selectedNodeIds.value = [ROOT_NODE_ID];
+      selectedNodeIds.value = [];
     }
   } else {
-    selectedNodeIds.value = [ROOT_NODE_ID];
+    selectedNodeIds.value = [];
   }
 })
 
