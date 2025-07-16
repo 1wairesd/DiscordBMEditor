@@ -592,41 +592,29 @@ import '@vue-flow/core/dist/theme-default.css'
 import CustomNode from './CustomNode.vue'
 import axios from 'axios'
 // --- PicMo emoji picker ---
-let emojiPicker = null;
 let emojiPopup = null;
 
 function openEmojiPicker(event) {
-  // Открывать только если выбран блок и есть поле message
   if (!selectedNode.value || !('message' in selectedNode.value.data)) return;
-  // Инициализируем только один раз
   if (!emojiPopup) {
-    // Динамический импорт для SSR и чтобы не ломать билд
-    import('picmo').then(({ createPicker }) => {
-      import('@picmo/popup-picker').then(({ createPopup }) => {
-        emojiPicker = createPicker({
-          theme: 'dark',
-          autoFocusSearch: true,
-          locale: 'ru',
-          showPreview: true,
-          showRecents: true,
-        });
-        emojiPopup = createPopup({
-          triggerElement: event.target,
-          picker: emojiPicker,
-          position: 'bottom-start',
-        });
-        emojiPicker.addEventListener('emoji:select', (e) => {
-          // Вставить эмодзи в конец сообщения
+    import('@picmo/popup-picker').then(({ createPopup }) => {
+      emojiPopup = createPopup({
+        triggerElement: event.target,
+        theme: 'dark',
+        locale: 'ru',
+        showPreview: true,
+        showRecents: true,
+        focusSearch: true,
+        onEmojiSelect: (selection) => {
           if (typeof selectedNode.value.data.message !== 'string') selectedNode.value.data.message = '';
-          selectedNode.value.data.message += e.emoji;
+          selectedNode.value.data.message += selection.emoji;
           saveToHistory();
           emojiPopup.hide();
-        });
-        emojiPopup.toggle();
+        }
       });
+      emojiPopup.show();
     });
   } else {
-    // Перемещаем popup к новой кнопке, если нужно
     emojiPopup.triggerElement = event.target;
     emojiPopup.toggle();
   }
