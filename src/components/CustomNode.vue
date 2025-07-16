@@ -130,23 +130,24 @@ const getConditionTypeLabel = () => {
 <style scoped>
 .custom-node {
   background: #404040;
-  border: 2px solid #525252;
-  border-radius: 12px;
+  border: 1px solid #525252;
+  border-radius: 0;
   padding: 0;
   min-width: 280px;
   max-width: 400px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  transition: all 0.2s ease;
+  box-shadow: none;
+  transition: border-color 0.2s;
   position: relative;
 }
 
 .custom-node.selected {
   border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2), 0 4px 12px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 0 0 2px #3b82f6;
 }
 
 .custom-node:hover {
   cursor: grab;
+  border-color: #6b7280;
 }
 .custom-node:active {
   cursor: grabbing;
@@ -157,9 +158,10 @@ const getConditionTypeLabel = () => {
   align-items: flex-start;
   gap: 0.75rem;
   padding: 0.75rem 1rem;
-  border-radius: 10px 10px 0 0;
+  border-radius: 0;
   border-bottom: 1px solid #525252;
   min-height: 48px;
+  background: #404040;
 }
 
 .node-header.type-option {
