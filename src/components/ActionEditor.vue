@@ -10,6 +10,7 @@
       <option value="send_to_channel">send_to_channel</option>
       <option value="send_page">send_page</option>
       <option value="resolve_placeholders">resolve_placeholders</option>
+      <option value="edit_message">edit_message</option>
     </select>
     <!-- send_message -->
     <template v-if="action.type === 'send_message'">
@@ -103,6 +104,12 @@
       <input v-model="action.label" placeholder="label" />
       <input type="checkbox" v-model="action.delete_all" /> delete_all
       <input v-model="action.response_message" placeholder="response_message" />
+    </template>
+    <!-- edit_message -->
+    <template v-if="action.type === 'edit_message'">
+      <input v-model="action.target_id" placeholder="target_id (ID сообщения)" />
+      <input v-model="action.message" placeholder="message (новый текст)" />
+      <input v-model="action.label" placeholder="label (метка)" />
     </template>
     <!-- edit_component, embed, другие типы можно расширять по мере необходимости -->
     <button type="button" class="delete-action" @click="$emit('delete')">🗑️</button>

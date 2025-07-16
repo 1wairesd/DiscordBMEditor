@@ -192,6 +192,7 @@
                 <option value="add_role">Добавить роль</option>
                 <option value="resolve_placeholders">Разрешить плейсхолдеры</option>
                 <option value="send_page">Отправить страницу</option>
+                <option value="edit_message">Редактировать сообщение</option>
               </select>
             </div>
 
@@ -421,6 +422,15 @@
               />
             </div>
 
+            <div v-if="selectedNode.data.actionType === 'edit_message'" class="form-group">
+              <label>ID сообщения:</label>
+              <input v-model="selectedNode.data.target_id" type="text" placeholder="ID сообщения" class="form-input" @input="saveToHistory" />
+              <label>Новое сообщение:</label>
+              <textarea v-model="selectedNode.data.message" placeholder="Введите новое сообщение" class="form-textarea" rows="3" @input="saveToHistory"></textarea>
+              <label>Метка:</label>
+              <input v-model="selectedNode.data.label" type="text" placeholder="Метка для ссылки" class="form-input" @input="saveToHistory" />
+            </div>
+
             <div class="form-group">
               <label>Задержка (сек):</label>
               <input 
@@ -478,6 +488,15 @@
                 class="form-input"
                 @input="saveToHistory"
               />
+            </div>
+
+            <div class="form-group">
+              <label>Действия при неудаче:</label>
+              <button @click="addFailAction" class="btn btn-secondary">+ Действие при неудаче</button>
+              <div v-for="(failAction, idx) in selectedNode.data.failActions || []" :key="idx" class="fail-action-block">
+                <div>{{ failAction.actionType }}</div>
+                <button @click="removeFailAction(idx)" class="btn btn-danger">Удалить</button>
+              </div>
             </div>
           </div>
 
@@ -572,7 +591,8 @@ const availableActions = ref([
   { type: 'action', label: 'Форма', icon: '📋' },
   { type: 'action', label: 'Добавить роль', icon: '👑' },
   { type: 'action', label: 'Разрешить плейсхолдеры', icon: '🔧' },
-  { type: 'action', label: 'Отправить страницу', icon: '📄' }
+  { type: 'action', label: 'Отправить страницу', icon: '📄' },
+  { type: 'action', label: 'Редактировать сообщение', icon: '✏️' }
 ])
 
 const availableConditions = ref([
@@ -734,13 +754,15 @@ const getDefaultDataForType = (type) => {
         role_id: '',
         template: '',
         player: '',
-        page_id: ''
+        page_id: '',
+        failActions: []
       }
     case 'condition':
       return {
         conditionType: 'permission',
         role_id: '',
-        percent: 50
+        percent: 50,
+        failActions: []
       }
     default:
       return {}
@@ -1106,6 +1128,45 @@ function createRootCommand() {
     selectedNodeIds.value = [ROOT_NODE_ID]
     saveToHistory()
   }
+}
+
+function addFailAction() {
+  if (selectedNode.value && selectedNode.value.id === ROOT_NODE_ID) return;
+  const newFailAction = {
+    actionType: 'send_message', // Default to send_message
+    message: '',
+    response_type: 'REPLY',
+    label: '',
+    embed: null,
+    channel: '',
+    delete_all: false,
+    response_message: '',
+    button_label: '',
+    button_style: 'PRIMARY',
+    button_url: '',
+    button_emoji: '',
+    button_disabled: false,
+    button_id: '',
+    button_message: '',
+    target_id: '',
+    target_message: '',
+    component_id: '',
+    form_name: '',
+    role_id: '',
+    template: '',
+    player: '',
+    page_id: '',
+    failActions: [] // Ensure it's an array
+  };
+  updateNodeData(selectedNode.value.id, { failActions: [...(selectedNode.value.data.failActions || []), newFailAction] });
+  saveToHistory();
+}
+
+function removeFailAction(index) {
+  if (selectedNode.value && selectedNode.value.id === ROOT_NODE_ID) return;
+  const newFailActions = (selectedNode.value.data.failActions || []).filter((_, i) => i !== index);
+  updateNodeData(selectedNode.value.id, { failActions: newFailActions });
+  saveToHistory();
 }
 </script>
 
