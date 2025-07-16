@@ -1,5 +1,9 @@
 <template>
-  <div class="custom-node" :class="{ selected }">
+  <div
+    class="custom-node"
+    :class="{ selected: isSelected }"
+    @click.stop="handleSelect"
+  >
     <div class="node-header" :class="`type-${data.type}`">
       <div class="node-icon">{{ getIcon() }}</div>
       <div class="node-title" v-if="data.type === 'root'">{{ data.name || getDefaultName() }}</div>
@@ -125,6 +129,10 @@ const getConditionTypeLabel = () => {
   }
   return typeMap[props.data.conditionType] || props.data.conditionType
 }
+
+const handleSelect = () => {
+  emit('select', props.data.id);
+};
 </script>
 
 <style scoped>
