@@ -1051,9 +1051,9 @@ saveToHistory()
 
 // Удаление по клавише Delete/Backspace
 function handleKeydown(e) {
-  // Если Backspace и не в textarea/input — полностью блокируем (даже для VueFlow)
+  const tag = document.activeElement && document.activeElement.tagName;
   if (e.key === 'Backspace') {
-    const tag = document.activeElement && document.activeElement.tagName;
+    // Если фокус не в input/textarea — полностью блокируем Backspace
     if (tag !== 'TEXTAREA' && tag !== 'INPUT') {
       e.preventDefault();
       e.stopImmediatePropagation();
@@ -1061,8 +1061,7 @@ function handleKeydown(e) {
     }
   }
   if (e.key === 'Delete' && selectedNode.value) {
-    // Запретить удаление rootNode
-    if (selectedNode.value.id === ROOT_NODE_ID) return;
+    // Разрешаем удалять rootNode тоже
     deleteNode();
   }
 }
