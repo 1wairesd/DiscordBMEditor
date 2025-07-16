@@ -2012,7 +2012,8 @@ function onTextareaResize(nodeId, field) {
   cursor: pointer;
 }
 .header-logo-link:hover .header-title {
-  text-decoration: underline;
+  text-decoration: none;
+  color: #3b82f6;
 }
 .header-logo {
   height: 28px;
