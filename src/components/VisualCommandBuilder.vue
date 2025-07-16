@@ -1,7 +1,10 @@
 <template>
   <div class="visual-command-builder">
     <div class="topbar">
-      <div class="topbar-title">DiscordBM Editor</div>
+      <div class="topbar-title">
+        <img src="@/assets/ws_logo.png" alt="WS Logo" class="topbar-logo" />
+        DiscordBM Editor
+      </div>
       <div class="topbar-actions">
         <button @click="openCommandsModal" class="btn btn-info">Команды</button>
         <button @click="undo" :disabled="!canUndo" class="btn btn-secondary">↶ Отменить</button>
@@ -1823,6 +1826,12 @@ function createRootCommand() {
   font-size: 1.25rem;
   font-weight: 700;
   color: #fff;
+}
+.topbar-logo {
+  height: 32px;
+  width: 32px;
+  margin-right: 12px;
+  vertical-align: middle;
 }
 .topbar-actions {
   display: flex;
