@@ -705,6 +705,12 @@ onMounted(() => {
   } else {
     selectedNodeIds.value = [];
   }
+  // При загрузке — восстановить ширину из localStorage
+  const savedSidebarWidth = localStorage.getItem('discordbm-sidebar-width');
+  if (savedSidebarWidth) {
+    const w = parseInt(savedSidebarWidth, 10);
+    if (!isNaN(w) && w >= 280 && w <= 800) sidebarWidth.value = w;
+  }
 })
 
 // Drag and drop handlers
@@ -1234,6 +1240,8 @@ function onResizeSidebar(e) {
   let newWidth = startWidth + dx
   newWidth = Math.max(280, Math.min(800, newWidth))
   sidebarWidth.value = newWidth
+  // Сохранять ширину в localStorage
+  localStorage.setItem('discordbm-sidebar-width', String(newWidth));
 }
 function stopResizeSidebar() {
   resizingSidebar = false
