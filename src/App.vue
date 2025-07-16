@@ -87,7 +87,7 @@ export default {
         }
 
         const result = await response.json()
-        this.bytebinUrl = `https://bytebin.lucko.me/${result.key}`
+        this.bytebinUrl = result.key
         this.lastSaved = new Date().toLocaleString()
         
         // alert удалён
