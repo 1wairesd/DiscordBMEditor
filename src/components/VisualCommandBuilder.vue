@@ -205,6 +205,8 @@
                 placeholder="Введите сообщение"
                 class="form-textarea"
                 rows="3"
+                :ref="el => setTextareaRef(el, selectedNode.id, 'message')"
+                @mouseup="onTextareaResize(selectedNode.id, 'message')"
                 @input="saveToHistory"
               ></textarea>
               <label>Тип ответа:</label>
@@ -1253,6 +1255,25 @@ onBeforeUnmount(() => {
   window.removeEventListener('mousemove', onResizeSidebar)
   window.removeEventListener('mouseup', stopResizeSidebar)
 })
+
+const textareaRefs = ref({})
+function setTextareaRef(el, nodeId, field) {
+  if (el) {
+    textareaRefs.value[nodeId + '-' + field] = el
+    // Восстановить высоту из localStorage
+    const h = localStorage.getItem('discordbm-textarea-' + nodeId + '-' + field)
+    if (h && !isNaN(Number(h))) {
+      el.style.height = h + 'px'
+    }
+  }
+}
+function onTextareaResize(nodeId, field) {
+  // Сохранять высоту textarea в localStorage
+  const el = textareaRefs.value[nodeId + '-' + field]
+  if (el) {
+    localStorage.setItem('discordbm-textarea-' + nodeId + '-' + field, el.offsetHeight)
+  }
+}
 </script>
 
 <style scoped>
