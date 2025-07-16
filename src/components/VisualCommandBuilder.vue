@@ -2,7 +2,7 @@
   <div class="visual-command-builder">
     <div class="topbar">
       <div class="topbar-title">
-        <img src="src/assets/ws_logo.png" alt="WS Logo" class="topbar-logo" />
+        <img :src="wsLogo" alt="WS Logo" class="topbar-logo" />
         DiscordBM Editor
       </div>
       <div class="topbar-actions">
@@ -549,6 +549,7 @@ import '@vue-flow/core/dist/style.css'
 import '@vue-flow/core/dist/theme-default.css'
 import CustomNode from './CustomNode.vue'
 import axios from 'axios'
+import wsLogo from '@/assets/ws_logo.png'
 
 // Register custom node type
 const nodeTypes = {
