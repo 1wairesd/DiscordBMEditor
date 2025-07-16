@@ -654,6 +654,11 @@ watch(elements, () => {
   validateSchema()
 }, { deep: true })
 
+// Сохранять выделение в localStorage
+watch(selectedNodeIds, () => {
+  localStorage.setItem('discordbm-selected-node', JSON.stringify(selectedNodeIds.value));
+})
+
 // Автосохранение схемы в localStorage
 watch(elements, () => {
   localStorage.setItem('discordbm-schema', JSON.stringify(elements.value));
@@ -680,7 +685,24 @@ onMounted(() => {
   } else {
     elements.value = [rootNode]
   }
-  selectedNodeIds.value = [ROOT_NODE_ID]
+  // Восстановить выделение
+  const savedSelected = localStorage.getItem('discordbm-selected-node');
+  if (savedSelected) {
+    try {
+      const ids = JSON.parse(savedSelected);
+      // Проверяем, что хотя бы один id есть среди элементов
+      const validIds = Array.isArray(ids) ? ids.filter(id => elements.value.some(el => el.id === id)) : [];
+      if (validIds.length > 0) {
+        selectedNodeIds.value = validIds;
+      } else {
+        selectedNodeIds.value = [ROOT_NODE_ID];
+      }
+    } catch {
+      selectedNodeIds.value = [ROOT_NODE_ID];
+    }
+  } else {
+    selectedNodeIds.value = [ROOT_NODE_ID];
+  }
 })
 
 // Drag and drop handlers
