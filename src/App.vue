@@ -1,11 +1,5 @@
 <template>
   <div id="app">
-    <!-- Кликабельный логотип и текст -->
-    <a href="https://1wairesd.github.io/1wairesdIndustriesWiki/docs/DiscordBM/DiscordBMEditor/dscordbmeditor-main" 
-       target="_blank" rel="noopener" class="header-logo-link" style="margin: 16px 0 0 24px;">
-      <img src="/1wairesdIndistries.png" alt="Logo" class="header-logo" />
-      <span class="header-title">DiscordBM Editor</span>
-    </a>
     <!-- Удалить header-шапку, если есть, чтобы не было дублирования. -->
     <SaveModal v-if="showSaveModal" :bytebin-key="bytebinUrl" @close="showSaveModal = false" />
 

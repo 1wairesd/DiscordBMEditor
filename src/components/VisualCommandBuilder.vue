@@ -1,10 +1,11 @@
 <template>
   <div class="visual-command-builder">
     <div class="topbar">
-      <div class="topbar-title">
-        <img src="/1wairesdIndistries.png" alt="WS Logo" class="topbar-logo" />
-        DiscordBM Editor
-      </div>
+      <a href="https://1wairesd.github.io/1wairesdIndustriesWiki/docs/DiscordBM/DiscordBMEditor/dscordbmeditor-main" 
+         target="_blank" rel="noopener" class="header-logo-link">
+        <img src="/1wairesdIndistries.png" alt="Logo" class="header-logo" />
+        <span class="header-title">DiscordBM Editor</span>
+      </a>
       <div class="topbar-actions">
         <button v-if="!hasRootNode" @click="createRootCommand" class="btn btn-success">Создать команду</button>
         <button @click="openCommandsModal" class="btn btn-info">Команды</button>
@@ -2003,16 +2004,24 @@ function onTextareaResize(nodeId, field) {
   background: #23272b;
   border-bottom: 1px solid #404040;
 }
-.topbar-title {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: #fff;
+.header-logo-link {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
 }
-.topbar-logo {
-  height: 32px;
-  width: 32px;
-  margin-right: 12px;
-  vertical-align: middle;
+.header-logo-link:hover .header-title {
+  text-decoration: underline;
+}
+.header-logo {
+  height: 28px;
+  margin-right: 8px;
+}
+.header-title {
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
 }
 .topbar-actions {
   display: flex;
